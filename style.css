@@ -1,0 +1,943 @@
+/* ==========================================================================
+   Puneet Kukreti — Kinetic Star Canvas & Mouse-Follow Camera Panning Engine
+   ========================================================================== */
+
+:root {
+  --paper: #121010;
+  --ink: #f4f2f0;
+  --ink-dim: rgba(244, 242, 240, 0.55);
+  --ink-faint: rgba(244, 242, 240, 0.24);
+  --line: rgba(244, 242, 240, 0.14);
+  --line-active: rgba(244, 242, 240, 0.45);
+  --display: 'Unbounded', sans-serif;
+  --body: 'Space Grotesk', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: auto;
+  min-height: 100%;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
+  background-color: var(--paper);
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Minimalist Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--paper);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(244, 242, 240, 0.15);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(244, 242, 240, 0.4);
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ==========================================================================
+   Preloader
+   ========================================================================== */
+.preloader {
+  position: fixed;
+  inset: 0;
+  background: var(--paper);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+}
+
+.preloader.fade-out {
+  /* opacity: 0; */
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.preloader-content {
+  width: 90%;
+  max-width: 440px;
+  text-align: center;
+}
+
+.preloader-title {
+  font-family: var(--display);
+  font-size: clamp(32px, 6vw, 60px);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1.2px var(--ink);
+  margin-bottom: 24px;
+}
+
+.loader-bar-bg {
+  width: 100%;
+  height: 2px;
+  background: var(--line);
+  position: relative;
+  overflow: hidden;
+}
+
+.loader-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--ink);
+  transition: width 0.15s ease-out;
+}
+
+.loader-status {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+/* ==========================================================================
+   Film Grain & Vignette Overlay
+   ========================================================================== */
+.grain {
+  position: fixed;
+  inset: -100px;
+  z-index: 8;
+  pointer-events: none;
+  opacity: 0.42;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.09'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: 0.9s steps(4, end) infinite grain;
+}
+
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-30px, 20px); }
+  50% { transform: translate(20px, -35px); }
+  75% { transform: translate(-15px, -20px); }
+  100% { transform: translate(0, 0); }
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 38%, rgba(18, 16, 16, 0.82) 100%);
+}
+
+/* ==========================================================================
+   Fixed Interface Overlays (HUD)
+   ========================================================================== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.header {
+  position: absolute;
+  top: 28px;
+  left: 32px;
+  right: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--body);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  text-transform: uppercase;
+}
+
+.brand img {
+  display: block;
+}
+
+.status {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+/* Vertical Progress Bar */
+.progress-track {
+  position: absolute;
+  top: 50%;
+  right: 32px;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 36vh;
+  background: var(--line);
+}
+
+.progress-fill {
+  width: 100%;
+  height: 0%;
+  background: var(--ink);
+  transform-origin: top;
+  transition: height 0.05s linear;
+}
+
+/* Active Section Indicator */
+.section-nav {
+  position: absolute;
+  bottom: 30px;
+  left: 32px;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.section-label b {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.section-label .chev {
+  border-top: 1px solid var(--ink-dim);
+  border-right: 1px solid var(--ink-dim);
+  width: 6px;
+  height: 6px;
+  transform: rotate(-45deg);
+  display: inline-block;
+  margin-left: 4px;
+}
+
+/* Dripping Scroll Hint */
+.hint {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  transition: opacity 0.5s ease;
+}
+
+.hint .line {
+  width: 1px;
+  height: 38px;
+  background: var(--line);
+  position: relative;
+  overflow: hidden;
+}
+
+.hint .line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  animation: 1.8s ease-in-out infinite drip;
+}
+
+@keyframes drip {
+  0% { transform: translateY(-100%); }
+  60%, 100% { transform: translateY(100%); }
+}
+
+/* ==========================================================================
+   Continuous Pinned Canvas Track & 3D Perspective Stage
+   ========================================================================== */
+.sequence-section {
+  position: relative;
+  height: 900vh;
+  background-color: var(--paper);
+}
+
+.sequence-sticky-wrapper {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  perspective: 1000px;
+  perspective-origin: center center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   Oversized Composition (Moves with Mouse Camera Panning)
+   ========================================================================== */
+.oversized-composition {
+  position: absolute;
+  top: -6vh;
+  left: -6vw;
+  width: calc(100vw + 12vw);
+  height: calc(100vh + 12vh);
+  transform-style: preserve-3d;
+  will-change: transform;
+  pointer-events: none;
+}
+
+#sequence-canvas { display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: block;
+  pointer-events: none;
+  filter: contrast(1.12) brightness(1.02);
+}
+
+.canvas-gradient-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(180deg, var(--paper) 0%, transparent 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.canvas-gradient-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(0deg, var(--paper) 0%, transparent 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   3D Spatial World & Floating Layers
+   ========================================================================== */
+.spatial-world {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.spatial-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  will-change: transform, opacity, filter;
+  /* opacity: 0; */
+  /* transform: translate3d... */
+}
+
+.spatial-layer a,
+.spatial-layer button {
+  pointer-events: auto;
+}
+
+.layer-meta {
+  font-family: var(--body);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 24px;
+}
+
+/* ==========================================================================
+   Layer 0: Hero Section (Puneet Kukreti & Transparent Photo)
+   ========================================================================== */
+.layer-hero {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.hero-container {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: clamp(28px, 5vw, 70px);
+  align-items: center;
+  width: min(980px, 85vw);
+  margin: 0 auto;
+}
+
+.hero-text-col {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.hero-name {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.92;
+  font-family: var(--display);
+  text-transform: uppercase;
+}
+
+.name-outline {
+  font-size: clamp(36px, 5.25vw, 76px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: transparent;
+  -webkit-text-stroke: 1.4px var(--ink);
+}
+
+.name-solid {
+  font-size: clamp(36px, 5.25vw, 76px);
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  margin-top: 4px;
+}
+
+.hero-alias {
+  font-family: var(--body);
+  font-size: clamp(11px, 1.0vw, 13px);
+  letter-spacing: 0.32em;
+  color: var(--ink-dim);
+  margin-top: 16px;
+  text-transform: uppercase;
+}
+
+.hero-roles {
+  list-style: none;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-family: var(--body);
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 300;
+  color: var(--ink);
+}
+
+.hero-roles li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-roles .bullet {
+  color: var(--ink-dim);
+  font-family: var(--display);
+  font-size: 13px;
+  width: 11px;
+}
+
+/* ==========================================================================
+   Portrait with Transparent Background & Animated Technical Border
+   ========================================================================== */
+.hero-portrait-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  will-change: transform;
+}
+
+.portrait-container {
+  position: relative;
+  width: clamp(130px, 12vw, 170px);
+  aspect-ratio: 0.82;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animated Dashed Border */
+.portrait-border-svg {
+  position: absolute;
+  inset: -6px;
+  width: calc(100% + 12px);
+  height: calc(100% + 12px);
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
+}
+
+.portrait-border-rect {
+  fill: none;
+  stroke: rgba(244, 242, 240, 0.32);
+  stroke-width: 1;
+  stroke-dasharray: 6, 5;
+  animation: dashCycle 24s linear infinite;
+}
+
+@keyframes dashCycle {
+  to {
+    stroke-dashoffset: 360;
+  }
+}
+
+/* Corner Crosshair Brackets */
+.portrait-corner {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-color: var(--ink-dim);
+  border-style: solid;
+  z-index: 6;
+}
+
+.portrait-corner.tl { top: -8px; left: -8px; border-width: 1px 0 0 1px; }
+.portrait-corner.tr { top: -8px; right: -8px; border-width: 1px 1px 0 0; }
+.portrait-corner.bl { bottom: -8px; left: -8px; border-width: 0 0 1px 1px; }
+.portrait-corner.br { bottom: -8px; right: -8px; border-width: 0 1px 1px 0; }
+
+/* Portrait Image with Transparent Background */
+.portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  /* mix-blend-mode: screen; */ /* Makes dark studio background 100% transparent! */
+  filter: contrast(1.1) brightness(1.05);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   Layer 1: 3D Orbiting Ring (Floating in Deep Space)
+   ========================================================================== */
+.orbit-disc {
+  width: 780px;
+  height: 780px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+.orbit-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.orbit-text {
+  fill: var(--ink);
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+/* ==========================================================================
+   Layer 2: Elevator Pitch
+   ========================================================================== */
+.pitch-container {
+  position: relative;
+  max-width: 840px;
+  padding: 48px 36px;
+  text-align: center;
+}
+
+.star-cross {
+  position: absolute;
+  color: var(--ink-dim);
+  font-size: 16px;
+  line-height: 1;
+  font-family: var(--display);
+  font-weight: 300;
+}
+
+.star-cross.tl { top: 0; left: 0; }
+.star-cross.tr { top: 0; right: 0; }
+.star-cross.bl { bottom: 0; left: 0; }
+.star-cross.br { bottom: 0; right: 0; }
+
+.pitch-quote {
+  font-family: var(--display);
+  font-size: clamp(26px, 3.8vw, 46px);
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.pitch-sub {
+  font-family: var(--body);
+  font-size: clamp(16px, 1.8vw, 21px);
+  color: var(--ink-dim);
+  margin-top: 24px;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   Layer 3: The Decade & Client Constellation
+   ========================================================================== */
+.decade-container {
+  max-width: 960px;
+  width: 100%;
+  text-align: center;
+}
+
+.decade-heading {
+  font-family: var(--display);
+  font-size: clamp(26px, 3.8vw, 42px);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 36px;
+}
+
+.client-wall {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px 48px;
+  margin: 36px 0;
+  place-items: center;
+}
+
+.client-item {
+  color: var(--ink);
+  opacity: 0.85;
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+.logo-quantive {
+  font-family: var(--display);
+  font-size: clamp(20px, 2.6vw, 32px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.logo-cupffee {
+  font-family: var(--display);
+  font-size: clamp(22px, 2.8vw, 34px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.logo-cupffee span {
+  font-size: 16px;
+  vertical-align: super;
+  color: var(--ink-dim);
+}
+
+.logo-ekoht {
+  font-family: var(--display);
+  font-size: clamp(24px, 3.2vw, 40px);
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.logo-furever {
+  font-family: var(--body);
+  font-size: clamp(18px, 2.2vw, 26px);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+.logo-clevertap {
+  font-family: var(--body);
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  border: 1px solid var(--line);
+  padding: 8px 20px;
+  border-radius: 999px;
+}
+
+.logo-mass {
+  font-family: var(--body);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink-dim);
+}
+
+.timeline-quick {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+  font-size: 13px;
+  color: var(--ink-dim);
+  letter-spacing: 0.06em;
+}
+
+/* ==========================================================================
+   Layer 4: Perspective in Numbers
+   ========================================================================== */
+.numbers-container {
+  max-width: 960px;
+  width: 100%;
+}
+
+.numbers-heading {
+  font-family: var(--display);
+  font-size: clamp(26px, 3.8vw, 44px);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(24px, 4vw, 48px);
+  margin-top: 36px;
+}
+
+.number-item {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+.num-val {
+  font-family: var(--display);
+  font-size: clamp(36px, 5.2vw, 68px);
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.num-lbl {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--ink-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+/* ==========================================================================
+   Layer 5: Case Studies
+   ========================================================================== */
+.cases-container {
+  max-width: 980px;
+  width: 100%;
+}
+
+.cases-heading {
+  font-family: var(--display);
+  font-size: clamp(26px, 3.8vw, 44px);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+
+.cases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.case-card {
+  border: 1px solid var(--line);
+  background: rgba(244, 242, 240, 0.02);
+  padding: 24px;
+  transition: border-color 0.25s, background 0.25s;
+}
+
+.case-card:hover {
+  border-color: var(--line-active);
+  background: rgba(244, 242, 240, 0.05);
+}
+
+.case-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.case-tag {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.case-year {
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+.case-title {
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+.case-desc {
+  font-size: 13px;
+  color: var(--ink-dim);
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   Layer 6: Contact / Let's Talk
+   ========================================================================== */
+.contact-container {
+  text-align: center;
+  max-width: 800px;
+}
+
+.contact-big-title {
+  font-family: var(--display);
+  font-size: clamp(48px, 8vw, 100px);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+  color: var(--ink);
+  margin-top: 10px;
+  margin-bottom: 24px;
+}
+
+.contact-email-link {
+  display: inline-block;
+  font-family: var(--body);
+  font-size: clamp(18px, 2.8vw, 32px);
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+  margin-bottom: 28px;
+  transition: border-color 0.25s;
+}
+
+.contact-email-link:hover {
+  border-color: var(--ink);
+}
+
+.contact-location {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 32px;
+}
+
+.contact-socials {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.contact-socials a {
+  color: var(--ink-dim);
+  text-decoration: none;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.contact-socials a:hover {
+  color: var(--ink);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+@media (max-width: 900px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .hero-roles li {
+    justify-content: center;
+  }
+
+  .hero-portrait-col {
+    order: -1;
+  }
+
+  .portrait-container {
+    width: 110px;
+  }
+
+  .client-wall {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .numbers-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .header {
+    top: 18px;
+    left: 20px;
+    right: 20px;
+  }
+
+  .status {
+    display: none;
+  }
+
+  .progress-track {
+    right: 18px;
+  }
+
+  .section-nav {
+    bottom: 20px;
+    left: 20px;
+  }
+
+  .oversized-composition {
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    transform: none !important;
+  }
+}

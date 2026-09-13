@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Puneet Kukreti — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Unbounded:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div id="preloader" class="preloader">
+    <div class="preloader-content">
+      <div class="preloader-title">INITIALIZING</div>
+      <div class="loader-bar-bg">
+        <div id="loader-bar" class="loader-bar"></div>
+      </div>
+      <div class="loader-status">
+        <span id="loader-text">Loading star sequence...</span>
+        <span id="loader-pct">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Noise Grain & Cinema Vignette -->
+  <div class="grain"></div>
+  <div class="vignette"></div>
+
+  <!-- Fixed Interface Overlays (HUD) -->
+  <div class="overlay">
+    <!-- Header -->
+    <header class="header" id="header">
+      <div class="brand">
+        <img src="starmark.svg" alt="Starmark" width="18" height="22" />
+        <span>Puneet Kukreti</span>
+      </div>
+      <div class="status">PORTFOLIO &middot; 2026</div>
+    </header>
+
+    <!-- Vertical Progress Track -->
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- Active Section Indicator (Bottom Left) -->
+    <div class="section-nav">
+      <div class="section-label" id="section-label">
+        <span class="label-prefix">SECTION</span>
+        <b id="section-name">INTRO</b>
+        <span class="chev"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Down Dripping Indicator (Bottom Center) -->
+  <div class="hint" id="scroll-hint">
+    <span>SCROLL TO FLY</span>
+    <div class="line"></div>
+  </div>
+
+  <!-- Sticky Canvas & Spatial 3D World Section -->
+  <main class="sequence-section" id="sequence-section">
+    <div class="sequence-sticky-wrapper">
+      
+      <!-- Oversized Composition for Mouse-Position Camera Panning -->
+      <div class="oversized-composition" id="oversized-composition">
+
+        <!-- 60FPS Continuous Star Canvas -->
+        <canvas id="sequence-canvas"></canvas>
+
+        <!-- Ambient Glow Overlays -->
+        <div class="canvas-gradient-top"></div>
+        <div class="canvas-gradient-bottom"></div>
+
+        <!-- 3D Spatial World (All Layers Float and Fly along Z-Axis) -->
+        <div class="spatial-world" id="spatial-world">
+
+          <!-- Layer 0: Hero (PUNEET KUKRETI + Transparent Photo with Animated Border) -->
+          <div class="spatial-layer layer-hero" id="layer-hero">
+            <div class="hero-container">
+              
+              <!-- Left: Typography & Roles -->
+                <div class="hero-text-col" id="hero-text-col">
+                  <h1 class="hero-name">
+                    <span class="name-outline">PUNEET</span>
+                    <span class="name-solid">KUKRETI</span>
+                  </h1>
+                  <div class="hero-alias">( PUNEET )</div>
+                  <ul class="hero-roles">
+                    <li><span class="bullet">&times;</span> Data Analyst</li>
+                    <li><span class="bullet">&times;</span> Import Executive</li>
+                    <li><span class="bullet">&times;</span> Developer</li>
+                    <li><span class="bullet">&times;</span> Web Designer</li>
+                  </ul>
+                </div>
+
+              <!-- Right: Portrait with Transparent Background & Animated Border -->
+              <div class="hero-portrait-col" id="hero-portrait-col">
+                  <div class="portrait-container">
+                    <!-- Animated Dashed Technical Border SVG -->
+                    <svg class="portrait-border-svg" viewBox="0 0 100 120" preserveAspectRatio="none">
+                      <rect class="portrait-border-rect" x="1.5" y="1.5" width="97" height="117" rx="2" />
+                    </svg>
+
+                    <!-- Technical Corner Crosshair Brackets -->
+                    <div class="portrait-corner tl"></div>
+                    <div class="portrait-corner tr"></div>
+                    <div class="portrait-corner bl"></div>
+                    <div class="portrait-corner br"></div>
+
+                    <!-- Cutout Portrait of Puneet -->
+                    <img src="puneet.jpg" alt="Puneet Kukreti" class="portrait-img" />
+                  </div>
+              </div>
+
+              </div>
+            </div>
+
+          <!-- Layer 1: 3D Orbiting Ring (Floating between Hero & Pitch) -->
+          <div class="spatial-layer layer-ring" id="layer-ring">
+            <div class="orbit-disc">
+              <svg viewBox="0 0 1000 1000" class="orbit-svg">
+                <path id="orbit-path" d="M 500, 500 m -360, 0 a 360,360 0 1,1 720,0 a 360,360 0 1,1 -720,0" fill="none"/>
+                <text class="orbit-text">
+                  <textPath href="#orbit-path" startOffset="0%">
+                    &middot; PUNEET &middot; PUNEET &middot; PUNEET &middot; PUNEET &middot; PUNEET &middot; PUNEET &middot; PUNEET &middot; PUNEET
+                  </textPath>
+                </text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Layer 2: Elevator Pitch -->
+          <div class="spatial-layer layer-pitch" id="layer-pitch">
+            <div class="pitch-container">
+              <div class="star-cross tl">+</div>
+              <div class="star-cross tr">+</div>
+              <div class="star-cross bl">+</div>
+              <div class="star-cross br">+</div>
+                <div class="layer-meta">&middot; MY BIO &middot;</div>
+                <h2 class="pitch-quote" style="font-size: clamp(24px, 3.5vw, 42px);">
+                  &ldquo;I work where data meets business. Currently a Data Analyst at Hyundai Rotem, with a background in import operations, I transform complex information into insights, patterns, and better decisions.&rdquo;
+                </h2>
+            </div>
+          </div>
+
+          <!-- Layer 3: The Decade & Client Constellation -->
+          <div class="spatial-layer layer-decade" id="layer-decade">
+            <div class="decade-container">
+              <div class="layer-meta">&middot; 02 / EXPERIENCE &middot;</div>
+              <h2 class="decade-heading">
+                Bridging the gap between data analytics and business operations
+              </h2>
+              <div class="client-wall">
+                <div class="client-item logo-quantive">Hyundai Rotem</div>
+                <div class="client-item logo-cupffee">Pee Empro India</div>
+                <div class="client-item logo-ekoht">Data Analytics</div>
+                <div class="client-item logo-furever">Import/Export</div>
+                <div class="client-item logo-clevertap">Logistics</div>
+              </div>
+              <div class="timeline-quick">
+                <span>Data Analyst @ Hyundai Rotem (Present)</span>
+                <span>Import Executive @ Pee Empro India (Previous)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Layer 4: Perspective in Numbers -->
+          <div class="spatial-layer layer-numbers" id="layer-numbers">
+            <div class="numbers-container">
+              <div class="layer-meta">&middot; 03 / METRICS &middot;</div>
+              <h2 class="numbers-heading">Impact in Numbers</h2>
+              <div class="numbers-grid">
+                <div class="number-item">
+                  <div class="num-val">5+</div>
+                  <div class="num-lbl">Years of experience</div>
+                </div>
+                <div class="number-item">
+                  <div class="num-val">10k+</div>
+                  <div class="num-lbl">Rows of data analyzed</div>
+                </div>
+                <div class="number-item">
+                  <div class="num-val">+20</div>
+                  <div class="num-lbl">Process optimizations</div>
+                </div>
+                <div class="number-item">
+                  <div class="num-val">100%</div>
+                  <div class="num-lbl">Commitment to accuracy</div>
+                </div>
+                <div class="number-item">
+                  <div class="num-val">3</div>
+                  <div class="num-lbl">Core tools (Excel, SQL, Python)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Layer 5: Case Studies -->
+          <div class="spatial-layer layer-cases" id="layer-cases">
+            <div class="cases-container">
+              <div class="layer-meta">&middot; 04 / HIGHLIGHTS &middot;</div>
+              <h2 class="cases-heading">Selected Work</h2>
+              <div class="cases-grid">
+                <div class="case-card">
+                  <div class="case-header">
+                    <span class="case-tag">DATA ANALYSIS &middot; HYUNDAI ROTEM</span>
+                    <span class="case-year">Present</span>
+                  </div>
+                  <h3 class="case-title">Operational Efficiency &amp; Reporting</h3>
+                  <p class="case-desc">
+                    Designing and maintaining data pipelines and dashboards to translate complex business metrics into actionable insights.
+                  </p>
+                </div>
+                <div class="case-card">
+                  <div class="case-header">
+                    <span class="case-tag">IMPORT OPS &middot; PEE EMPRO INDIA</span>
+                    <span class="case-year">Previous</span>
+                  </div>
+                  <h3 class="case-title">Supply Chain Optimization</h3>
+                  <p class="case-desc">
+                    Streamlined import procedures and logistics tracking, significantly reducing operational delays and improving visibility.
+                  </p>
+                </div>
+              </div>
+              <button class="cases-explore">View full resume &rarr;</button>
+            </div>
+          </div>
+
+          <!-- Layer 6: Contact / Let's Talk -->
+          <div class="spatial-layer layer-contact" id="layer-contact">
+            <div class="contact-container">
+              <div class="layer-meta">&middot; 05 / CONTACT &middot;</div>
+              <h2 class="contact-big-title">LET&rsquo;S TALK</h2>
+              <a href="mailto:punitkukreti49@gmail.com" class="contact-email-link">
+                punitkukreti49@gmail.com
+              </a>
+              <div class="contact-location">DELHI, INDIA &middot; EARTH</div>
+              <div class="contact-socials">
+                <a href="https://twitter.com/rahulkukereti" target="_blank" rel="noreferrer">@rahulkukereti</a>
+                <a href="https://linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS3DRenderer.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+
