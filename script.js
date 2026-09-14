@@ -607,20 +607,17 @@
   function runBootSequence(onComplete) {
     let preloader = document.getElementById('preloader');
     
-    // Cache-busting / robustness: if the preloader doesn't have the boot elements, create them!
     if (preloader && !document.getElementById('boot-text')) {
       preloader.innerHTML = `
         <div class="boot-terminal">
           <div id="boot-text" class="boot-text"></div>
-          <button id="boot-start-btn" class="boot-start-btn" style="display: none;">BOOT SYSTEM</button>
         </div>
       `;
       preloader.className = 'preloader boot-sequence';
     }
 
     const bootText = document.getElementById('boot-text');
-    const bootBtn = document.getElementById('boot-start-btn');
-    if (!preloader || !bootText || !bootBtn) return onComplete();
+    if (!preloader || !bootText) return onComplete();
 
     const lines = [
       "SYSTEM BOOT INITIATED...",
@@ -629,25 +626,35 @@
       "INITIALIZING WEBGL 3D CONTEXT...",
       "CSS3D RENDERER SYNCED.",
       "STARFIELD GENERATION COMPLETE.",
-      "AWAITING USER INPUT..."
+      "SYSTEM ONLINE."
     ];
     let delay = 0;
     
     lines.forEach((line, index) => {
       setTimeout(() => {
         bootText.textContent += line + "\n";
+        
+        // Auto-proceed when the last line finishes
         if (index === lines.length - 1) {
-          bootBtn.style.display = 'inline-block';
+          setTimeout(() => {
+            initAudio(); // Will initialize, but might be suspended by browser policy
+            
+            // Resume audio on first user click anywhere if it was blocked
+            const resumeAudio = () => {
+              if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+              }
+              document.removeEventListener('click', resumeAudio);
+            };
+            document.addEventListener('click', resumeAudio);
+
+            playBeep(800, 'square', 0.2, 0.2); // Might not play if blocked
+            preloader.classList.add('fade-out');
+            onComplete();
+          }, 800);
         }
       }, delay);
-      delay += 300 + Math.random() * 400; // Typewriter delay
-    });
-
-    bootBtn.addEventListener('click', () => {
-      initAudio();
-      playBeep(800, 'square', 0.2, 0.2);
-      preloader.classList.add('fade-out');
-      onComplete();
+      delay += 300 + Math.random() * 400;
     });
   }
 
