@@ -137,6 +137,19 @@
     camera.position.y = currentCamY;
     camera.position.z = camZ;
 
+    // Update active section HUD label based on camera depth
+    let currentSection = "INTRO";
+    if (camZ < -26000) currentSection = "CONTACT";
+    else if (camZ < -21500) currentSection = "HIGHLIGHTS";
+    else if (camZ < -16500) currentSection = "METRICS";
+    else if (camZ < -11500) currentSection = "EXPERIENCE";
+    else if (camZ < -6500) currentSection = "BIO";
+
+    const sectionLabel = document.getElementById('section-name');
+    if (sectionLabel && sectionLabel.textContent !== currentSection) {
+      sectionLabel.textContent = currentSection;
+    }
+
     const ringObj = objects.find(o => o.config.id === 'layer-ring');
     if (ringObj) {
       ringObj.obj.rotation.x = 65 * Math.PI / 180;

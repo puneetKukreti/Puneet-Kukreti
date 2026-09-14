@@ -579,42 +579,207 @@ body {
 /* ==========================================================================
    Layer 2: Elevator Pitch
    ========================================================================== */
-.pitch-container {
-  position: relative;
-  max-width: 840px;
-  padding: 48px 36px;
-  text-align: center;
+.pitch-split-container {
+  display: grid;
+  grid-template-columns: 1.2fr 2px 0.8fr;
+  gap: clamp(20px, 4vw, 50px);
+  max-width: 1200px;
+  width: 90vw;
+  align-items: center;
+  text-align: left;
 }
 
-.star-cross {
-  position: absolute;
-  color: var(--ink-dim);
-  font-size: 16px;
-  line-height: 1;
-  font-family: var(--display);
-  font-weight: 300;
+.pitch-split-container * {
+  font-family: 'Inter', sans-serif !important;
 }
 
-.star-cross.tl { top: 0; left: 0; }
-.star-cross.tr { top: 0; right: 0; }
-.star-cross.bl { bottom: 0; left: 0; }
-.star-cross.br { bottom: 0; right: 0; }
+@media (max-width: 768px) {
+  .pitch-split-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 40px;
+  }
+}
 
-.pitch-quote {
-  font-family: var(--display);
-  font-size: clamp(26px, 3.8vw, 46px);
-  font-weight: 700;
-  line-height: 1.35;
+.pitch-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.pitch-quote-split {
+  line-height: 1.1;
   color: var(--ink);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.04em;
+  margin: 10px 0 20px 0;
 }
 
-.pitch-sub {
-  font-family: var(--body);
-  font-size: clamp(16px, 1.8vw, 21px);
-  color: var(--ink-dim);
-  margin-top: 24px;
+.pitch-quote-light {
+  font-size: clamp(32px, 4.5vw, 64px);
+  font-weight: 300;
+  display: block;
+}
+
+.pitch-quote-bold {
+  font-size: clamp(34px, 4.5vw, 60px);
+  font-weight: 800;
+  display: block;
+}
+
+.pitch-left-desc {
+  font-size: clamp(14px, 1.5vw, 17px);
+  color: rgba(255, 255, 255, 0.9);
   line-height: 1.6;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.pitch-timeline {
+  position: relative;
+  height: 90%;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.4);
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .pitch-timeline { display: none; }
+}
+
+@keyframes star-float {
+  0%, 100% {
+    transform: translate(-50%, -30px) scale(1);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  }
+  50% {
+    transform: translate(-50%, 30px) scale(1.4);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+  }
+}
+
+.timeline-dot {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: var(--ink);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+
+.top-dot { 
+  top: 15%; 
+  animation: star-float 5s ease-in-out infinite;
+}
+.bottom-dot { 
+  top: 60%; 
+  animation: star-float 6s ease-in-out infinite reverse;
+}
+
+.pitch-right {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.role-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .role-group { text-align: center; }
+}
+
+.role-label {
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.35em;
+  color: var(--ink);
+  text-transform: uppercase;
+}
+
+@keyframes card-float {
+  0%, 100% {
+    transform: translateY(0px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0);
+  }
+  50% {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(255,255,255,0.03);
+  }
+}
+
+.role-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  transition: border-color 0.3s ease;
+  animation: card-float 6s ease-in-out infinite;
+}
+
+.role-group:nth-child(2) .role-card {
+  animation-delay: -3s;
+}
+
+.role-card:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.role-info h3 {
+  font-family: var(--display);
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.role-info p {
+  font-family: var(--body);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.role-logo {
+  font-family: var(--display);
+  font-size: 15px;
+  text-align: right;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.role-logo strong {
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+
+.role-icon {
+  color: var(--ink);
+  opacity: 0.8;
+}
+
+.pitch-right-desc {
+  font-family: var(--body);
+  font-size: clamp(14px, 1.5vw, 17px);
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  margin-top: 8px;
+  text-align: left;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .pitch-right-desc { text-align: center; }
 }
 
 /* ==========================================================================

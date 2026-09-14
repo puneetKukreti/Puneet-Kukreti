@@ -6,7 +6,7 @@
   <title>Puneet Kukreti — Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Unbounded:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Unbounded:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -133,17 +133,64 @@
             </div>
           </div>
 
-          <!-- Layer 2: Elevator Pitch -->
+          <!-- Layer 2: Elevator Pitch (Split Layout) -->
           <div class="spatial-layer layer-pitch" id="layer-pitch">
-            <div class="pitch-container">
-              <div class="star-cross tl">+</div>
-              <div class="star-cross tr">+</div>
-              <div class="star-cross bl">+</div>
-              <div class="star-cross br">+</div>
-                <div class="layer-meta">&middot; MY BIO &middot;</div>
-                <h2 class="pitch-quote" style="font-size: clamp(24px, 3.5vw, 42px);">
-                  &ldquo;I work where data meets business. Currently a Data Analyst at Hyundai Rotem, with a background in import operations, I transform complex information into insights, patterns, and better decisions.&rdquo;
+            <div class="pitch-split-container">
+              
+              <!-- Left Column: Typography & Bio -->
+              <div class="pitch-left">
+                <div class="layer-meta" style="margin-bottom: 30px;">MY BIO</div>
+                <h2 class="pitch-quote-split">
+                  <span class="pitch-quote-bold">FROM LOGISTICS<br>TO ANALYTICS</span>
                 </h2>
+                <p class="pitch-left-desc">
+                  Currently a Data Analyst at Hyundai Rotem, I bring analytical thinking together with hands-on experience from my previous role as an Import Executive. My journey across operations and analytics has shaped how I understand problems, work with information, and turn data into meaningful insights.
+                </p>
+              </div>
+
+              <!-- Center Column: Timeline -->
+              <div class="pitch-timeline">
+                <div class="timeline-line"></div>
+                <div class="timeline-dot top-dot"></div>
+                <div class="timeline-dot bottom-dot"></div>
+              </div>
+
+              <!-- Right Column: Role Cards & Description -->
+              <div class="pitch-right">
+                
+                <div class="role-group">
+                  <div class="role-label">NOW</div>
+                  <div class="role-card">
+                    <div class="role-info">
+                      <h3>Data Analyst</h3>
+                      <p>Hyundai Rotem <br><span style="font-size: 12px; color: rgba(255, 255, 255, 0.75); margin-top: 4px; display: inline-block;">2023 &mdash; PRESENT</span></p>
+                    </div>
+                    <div class="role-logo">
+                      <strong>HYUNDAI</strong><br>Rotem
+                    </div>
+                  </div>
+                </div>
+
+                <div class="role-group">
+                  <div class="role-label">BEFORE</div>
+                  <div class="role-card">
+                    <div class="role-info">
+                      <h3>Import Executive</h3>
+                      <p>Global Trade &amp; Logistics <br><span style="font-size: 12px; color: rgba(255, 255, 255, 0.75); margin-top: 4px; display: inline-block;">2019 &mdash; 2023</span></p>
+                    </div>
+                    <div class="role-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="pitch-right-desc">
+                  I transform complex information into insights,<br>
+                  patterns, and better decisions.
+                </p>
+
+              </div>
+
             </div>
           </div>
 
