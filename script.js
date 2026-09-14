@@ -143,7 +143,7 @@
     if (camZ < -22400) currentSection = "CONTACT";
     else if (camZ < -17800) currentSection = "HIGHLIGHTS";
     else if (camZ < -13000) currentSection = "METRICS";
-    else if (camZ < -8000) currentSection = "EXPERIENCE";
+    else if (camZ < -8000) currentSection = "SKILLS";
     else if (camZ < -3200) currentSection = "BIO";
 
     const sectionLabel = document.getElementById('section-name');

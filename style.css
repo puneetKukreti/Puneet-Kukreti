@@ -789,94 +789,231 @@ body {
 }
 
 /* ==========================================================================
-   Layer 3: The Decade & Client Constellation
+   Layer 3: Skills Constellation
    ========================================================================== */
-.decade-container {
-  max-width: 960px;
-  width: 100%;
+.skills-container {
+  max-width: 1260px;
+  width: min(1200px, 92vw);
+  margin: 0 auto;
   text-align: center;
-}
-
-.decade-heading {
-  font-family: var(--display);
-  font-size: clamp(26px, 3.8vw, 42px);
-  font-weight: 700;
-  line-height: 1.3;
-  margin-bottom: 36px;
-}
-
-.client-wall {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 36px 48px;
-  margin: 36px 0;
-  place-items: center;
-}
-
-.client-item {
-  color: var(--ink);
-  opacity: 0.85;
-  transition: opacity 0.25s, transform 0.25s;
-}
-
-.logo-quantive {
-  font-family: var(--display);
-  font-size: clamp(20px, 2.6vw, 32px);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-}
-
-.logo-cupffee {
-  font-family: var(--display);
-  font-size: clamp(22px, 2.8vw, 34px);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
-.logo-cupffee span {
-  font-size: 16px;
-  vertical-align: super;
-  color: var(--ink-dim);
-}
-
-.logo-ekoht {
-  font-family: var(--display);
-  font-size: clamp(24px, 3.2vw, 40px);
-  font-weight: 900;
-  letter-spacing: 0.14em;
-}
-
-.logo-furever {
-  font-family: var(--body);
-  font-size: clamp(18px, 2.2vw, 26px);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-}
-
-.logo-clevertap {
-  font-family: var(--body);
-  font-size: 15px;
-  letter-spacing: 0.1em;
-  border: 1px solid var(--line);
-  padding: 8px 20px;
-  border-radius: 999px;
-}
-
-.logo-mass {
-  font-family: var(--body);
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--ink-dim);
-}
-
-.timeline-quick {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 32px;
-  font-size: 13px;
+  align-items: center;
+  justify-content: center;
+}
+
+.skills-meta {
+  font-family: var(--body);
+  font-size: clamp(11px, 1vw, 13px);
+  letter-spacing: 0.35em;
   color: var(--ink-dim);
-  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.skills-heading {
+  font-family: var(--display);
+  font-size: clamp(26px, 3.8vw, 44px);
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.skills-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(13px, 1.2vw, 16px);
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 680px;
+  margin: 0 auto 52px auto;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.skills-constellation {
+  position: relative;
+  width: 100%;
+  max-width: 1140px;
+  margin-bottom: 60px;
+}
+
+.skills-orbit-svg {
+  position: absolute;
+  top: 15px;
+  left: 6%;
+  width: 88%;
+  height: 80px;
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+  opacity: 0.55;
+}
+
+.skills-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(12px, 2vw, 26px);
+  align-items: start;
+}
+
+.skill-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skill-node.node-1 { transform: translateY(14px); }
+.skill-node.node-2 { transform: translateY(4px); }
+.skill-node.node-3 { transform: translateY(0px); }
+.skill-node.node-4 { transform: translateY(4px); }
+.skill-node.node-5 { transform: translateY(14px); }
+
+.skill-sphere {
+  width: clamp(74px, 6.2vw, 86px);
+  height: clamp(74px, 6.2vw, 86px);
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 40%, rgba(12, 16, 26, 0.75) 75%, rgba(6, 9, 16, 0.95) 100%);
+  border: 1.2px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.35), inset 0 -3px 8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+  cursor: pointer;
+}
+
+.sphere-glow {
+  position: absolute;
+  top: 10%;
+  left: 20%;
+  width: 32%;
+  height: 22%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 80%);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: rotate(-25deg);
+}
+
+.sphere-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+.skill-sphere:hover {
+  transform: translateY(-8px) scale(1.08);
+}
+
+.skill-sphere:hover .sphere-icon {
+  transform: scale(1.1);
+}
+
+/* Individual Sphere Glow Accents */
+.sphere-excel:hover {
+  border-color: rgba(16, 124, 65, 0.8);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 32px rgba(16, 124, 65, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.sphere-python:hover {
+  border-color: rgba(56, 126, 184, 0.8);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 32px rgba(56, 126, 184, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.sphere-ai:hover {
+  border-color: rgba(96, 165, 250, 0.8);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 32px rgba(96, 165, 250, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.sphere-langchain:hover {
+  border-color: rgba(45, 212, 191, 0.8);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 32px rgba(45, 212, 191, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.sphere-webdev:hover {
+  border-color: rgba(192, 132, 252, 0.8);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 32px rgba(192, 132, 252, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.skill-title {
+  font-family: var(--body);
+  font-size: clamp(13px, 1.15vw, 16px);
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 18px;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.skill-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(11px, 0.9vw, 13px);
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+  max-width: 195px;
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+.skills-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  opacity: 0.75;
+}
+
+.skills-motto-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+}
+
+.skills-motto {
+  font-family: var(--body);
+  font-size: clamp(10px, 0.85vw, 12px);
+  letter-spacing: 0.28em;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .skills-orbit-svg {
+    display: none;
+  }
+  .skills-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .skill-node {
+    transform: none !important;
+  }
+}
+
+@media (max-width: 580px) {
+  .skills-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .skills-subtitle {
+    margin-bottom: 36px;
+  }
+  .skills-constellation {
+    margin-bottom: 40px;
+  }
 }
 
 /* ==========================================================================
