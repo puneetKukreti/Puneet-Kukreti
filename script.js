@@ -267,22 +267,87 @@
 
       const tabs = tabContainer.querySelectorAll('.tab-btn');
       const items = grid.querySelectorAll(`.${itemClass}`);
+      if (items.length === 0) return;
 
+      let currentIndex = 0;
+      let autoScrollTimer = null;
+      let isUserInteracting = false;
+      let resumeTimeout = null;
+
+      function scrollToCard(index, smooth = true) {
+        if (!items[index]) return;
+        currentIndex = index;
+        let scrollOffset = 0;
+        if (index > 0) {
+          const gridRect = grid.getBoundingClientRect();
+          const itemRect = items[index].getBoundingClientRect();
+          scrollOffset = itemRect.left - gridRect.left + grid.scrollLeft - (grid.clientWidth - items[index].clientWidth) / 2;
+        }
+        grid.scrollTo({ left: Math.max(0, Math.round(scrollOffset)), behavior: smooth ? 'smooth' : 'auto' });
+
+        tabs.forEach((t, i) => {
+          if (i === index) {
+            t.classList.add('active');
+            try {
+              t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            } catch(e) {}
+          } else {
+            t.classList.remove('active');
+          }
+        });
+      }
+
+      function nextCard() {
+        if (isUserInteracting) return;
+        // Only auto-scroll if container has scrollable overflow (e.g. mobile/tablet)
+        if (grid.scrollWidth <= grid.clientWidth + 10) return;
+
+        currentIndex = (currentIndex + 1) % items.length;
+        scrollToCard(currentIndex, true);
+      }
+
+      function startAutoScroll() {
+        stopAutoScroll();
+        autoScrollTimer = setInterval(nextCard, 3200);
+      }
+
+      function stopAutoScroll() {
+        if (autoScrollTimer) {
+          clearInterval(autoScrollTimer);
+          autoScrollTimer = null;
+        }
+      }
+
+      function pauseAutoScroll(duration = 4500) {
+        isUserInteracting = true;
+        stopAutoScroll();
+        clearTimeout(resumeTimeout);
+        resumeTimeout = setTimeout(() => {
+          isUserInteracting = false;
+          startAutoScroll();
+        }, duration);
+      }
+
+      // Tab button clicks
       tabs.forEach((tab, index) => {
         tab.addEventListener('click', (e) => {
           e.stopPropagation();
-          tabs.forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-
-          if (items[index]) {
-            const gridLeft = grid.getBoundingClientRect().left;
-            const itemLeft = items[index].getBoundingClientRect().left;
-            const scrollOffset = itemLeft - gridLeft + grid.scrollLeft - (grid.clientWidth - items[index].clientWidth) / 2;
-            grid.scrollTo({ left: scrollOffset, behavior: 'smooth' });
-          }
+          scrollToCard(index, true);
+          pauseAutoScroll(5000);
         });
       });
 
+      // Pause auto-scroll on direct touch or mouse interaction
+      grid.addEventListener('touchstart', () => pauseAutoScroll(4500), { passive: true });
+      grid.addEventListener('touchmove', () => pauseAutoScroll(4500), { passive: true });
+      grid.addEventListener('pointerdown', () => pauseAutoScroll(4500), { passive: true });
+      grid.addEventListener('mouseenter', () => {
+        isUserInteracting = true;
+        stopAutoScroll();
+      });
+      grid.addEventListener('mouseleave', () => pauseAutoScroll(2000));
+
+      // Synchronize active tab when user manually scrolls / swipes
       let scrollTimeout;
       grid.addEventListener('scroll', () => {
         clearTimeout(scrollTimeout);
@@ -300,6 +365,7 @@
             }
           });
 
+          currentIndex = activeIndex;
           tabs.forEach((tab, index) => {
             if (index === activeIndex) {
               tab.classList.add('active');
@@ -312,6 +378,9 @@
           });
         }, 60);
       }, { passive: true });
+
+      // Start automatic scrolling left to right
+      setTimeout(startAutoScroll, 1600);
     }
 
     setupTabGroup('skills-tabs', 'skills-grid', 'skill-node');
