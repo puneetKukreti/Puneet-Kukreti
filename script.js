@@ -147,7 +147,7 @@
     // Update active section HUD label based on compact depth
     let currentSection = "INTRO";
     if (camZ < -22400) currentSection = "CONTACT";
-    else if (camZ < -17800) currentSection = "HIGHLIGHTS";
+    else if (camZ < -17800) currentSection = "ACHIEVEMENTS";
     else if (camZ < -13000) currentSection = "METRICS";
     else if (camZ < -8000) currentSection = "SKILLS";
     else if (camZ < -3200) currentSection = "BIO";
