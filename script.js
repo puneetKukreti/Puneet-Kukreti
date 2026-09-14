@@ -7,7 +7,7 @@
   const stickyWrapper = document.querySelector('.sequence-sticky-wrapper');
 
   let scene, camera, cssRenderer, webglRenderer;
-  let starMesh;
+  let starMesh, warpLinesMesh;
   const objects = [];
 
   let mouseX = 0;
@@ -30,7 +30,7 @@
     webglRenderer.domElement.style.top = '0';
     webglRenderer.domElement.style.left = '0';
     webglRenderer.domElement.style.pointerEvents = 'none';
-    webglRenderer.domElement.style.zIndex = '5';
+    webglRenderer.domElement.style.zIndex = '0';
     stickyWrapper.appendChild(webglRenderer.domElement);
 
     cssRenderer = new THREE.CSS3DRenderer();
@@ -73,6 +73,25 @@
     });
     starMesh = new THREE.Points(starGeo, starMat);
     scene.add(starMesh);
+
+    const warpGeo = new THREE.BufferGeometry();
+    const warpCount = 2000;
+    const warpPos = new Float32Array(warpCount * 6);
+    for (let i = 0; i < warpCount * 6; i += 6) {
+      const x = (Math.random() - 0.5) * 12000;
+      const y = (Math.random() - 0.5) * 8000;
+      const z = 2000 - Math.random() * 37000;
+      warpPos[i] = x; warpPos[i+1] = y; warpPos[i+2] = z;
+      warpPos[i+3] = x; warpPos[i+4] = y; warpPos[i+5] = z - 2000;
+    }
+    warpGeo.setAttribute('position', new THREE.BufferAttribute(warpPos, 3));
+    const warpMat = new THREE.LineBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0
+    });
+    warpLinesMesh = new THREE.LineSegments(warpGeo, warpMat);
+    scene.add(warpLinesMesh);
 
     const layerConfigs = [
       { id: 'layer-hero', z: 1000 },
@@ -137,8 +156,25 @@
   function renderLoop() {
     if (lenisInstance) lenisInstance.raf(Date.now());
 
-    // Smooth, cinematic camera deceleration (slower, softer, deliberate pacing)
+    // Calculate scroll velocity
+    const velocity = Math.abs(targetProgress - currentProgress);
+
+    // Smooth, cinematic camera deceleration
     currentProgress += (targetProgress - currentProgress) * 0.035;
+
+    // Warp Speed Effect
+    if (warpLinesMesh) {
+      // Base scale + velocity multiplier
+      const stretch = 1 + (velocity * 2000); 
+      warpLinesMesh.scale.z = stretch;
+      
+      // Fade in lines based on speed
+      const targetOpacity = Math.min(1, velocity * 50);
+      warpLinesMesh.material.opacity += (targetOpacity - warpLinesMesh.material.opacity) * 0.1;
+      
+      // Slightly push stars back based on stretch to avoid clipping
+      warpLinesMesh.position.z = -stretch * 500;
+    }
 
     // Gentle, controlled hover parallax when actively moving mouse;
     // Returns smoothly to the middle (0, 0) when user stops hovering or on mobile!
@@ -146,6 +182,8 @@
     const targetCamY = isMouseHovering ? (mouseY * 35) : 0;
     currentCamX += (targetCamX - currentCamX) * 0.04;
     currentCamY += (targetCamY - currentCamY) * 0.04;
+
+    checkMinigameTrigger();
 
     const startZ = 2000;
     const endZ = -24500;
@@ -603,6 +641,26 @@
     });
   }
 
+  function initConstellations() {
+    const nodes = document.querySelectorAll('.skill-node');
+    const lines = document.querySelectorAll('.constellation-line');
+    
+    nodes.forEach((node, index) => {
+      node.addEventListener('mouseenter', () => {
+        const nodeNum = index + 1;
+        lines.forEach(line => {
+          if (line.classList.contains(`line-${nodeNum}-`) || 
+              line.className.baseVal.includes(`-${nodeNum}`)) {
+            line.classList.add('active');
+          }
+        });
+      });
+      node.addEventListener('mouseleave', () => {
+        lines.forEach(line => line.classList.remove('active'));
+      });
+    });
+  }
+
   // 3. Boot Sequence
   function runBootSequence(onComplete) {
     let preloader = document.getElementById('preloader');
@@ -696,6 +754,27 @@
     cards.forEach((card, index) => {
       // Make the whole card clickable, not just the button
       card.style.cursor = 'pointer';
+
+      // Holographic Tilt Effect
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = ((y - centerY) / centerY) * -10;
+        const rotateY = ((x - centerX) / centerX) * 10;
+        
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+        card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+      });
       card.addEventListener('click', (e) => {
         // Prevent default if they click the actual link/button inside
         e.preventDefault();
@@ -730,6 +809,127 @@
     });
   }
 
+  // 5. Easter Egg Minigame
+  let minigameActive = false;
+  let minigameTimer = 0;
+  function initMinigame() {
+    const canvas = document.getElementById('minigame-canvas');
+    const ctx = canvas.getContext('2d');
+    const gameOverText = document.getElementById('game-over-text');
+    
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    window.addEventListener('resize', () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    });
+
+    const ship = { x: width/2, y: height - 100, size: 20 };
+    const lasers = [];
+    const asteroids = [];
+
+    // Follow mouse
+    window.addEventListener('mousemove', (e) => {
+      if (!minigameActive) return;
+      ship.x += (e.clientX - ship.x) * 0.2;
+      ship.y += (e.clientY - ship.y) * 0.2;
+    });
+
+    // Shoot
+    window.addEventListener('mousedown', () => {
+      if (!minigameActive) return;
+      lasers.push({ x: ship.x, y: ship.y - ship.size, speed: 15 });
+      playBeep(1200, 'sawtooth', 0.1, 0.05); // Pew pew
+    });
+
+    function spawnAsteroid() {
+      asteroids.push({
+        x: Math.random() * width,
+        y: -50,
+        size: 15 + Math.random() * 25,
+        speed: 2 + Math.random() * 3
+      });
+    }
+
+    function gameLoop() {
+      if (!minigameActive) {
+        requestAnimationFrame(gameLoop);
+        return;
+      }
+      
+      ctx.clearRect(0, 0, width, height);
+      
+      // Draw Ship (Triangle)
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(ship.x, ship.y - ship.size);
+      ctx.lineTo(ship.x + ship.size, ship.y + ship.size);
+      ctx.lineTo(ship.x - ship.size, ship.y + ship.size);
+      ctx.fill();
+
+      // Update & Draw Lasers
+      ctx.fillStyle = '#fff';
+      for (let i = lasers.length - 1; i >= 0; i--) {
+        const l = lasers[i];
+        l.y -= l.speed;
+        ctx.fillRect(l.x - 2, l.y, 4, 15);
+        if (l.y < -50) lasers.splice(i, 1);
+      }
+
+      // Update & Draw Asteroids
+      ctx.strokeStyle = '#888';
+      ctx.lineWidth = 2;
+      for (let i = asteroids.length - 1; i >= 0; i--) {
+        const a = asteroids[i];
+        a.y += a.speed;
+        
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, a.size, 0, Math.PI * 2);
+        ctx.stroke();
+
+        if (a.y > height + 50) asteroids.splice(i, 1);
+
+        // Collision check
+        for (let j = lasers.length - 1; j >= 0; j--) {
+          const l = lasers[j];
+          const dist = Math.hypot(l.x - a.x, l.y - a.y);
+          if (dist < a.size + 10) {
+            asteroids.splice(i, 1);
+            lasers.splice(j, 1);
+            playBeep(150, 'square', 0.2, 0.1); // Boom
+            break;
+          }
+        }
+      }
+
+      if (Math.random() < 0.03) spawnAsteroid();
+
+      requestAnimationFrame(gameLoop);
+    }
+    
+    requestAnimationFrame(gameLoop);
+  }
+
+  function checkMinigameTrigger() {
+    if (targetProgress > 0.98 && !minigameActive && minigameTimer < 10) {
+      minigameActive = true;
+      document.getElementById('minigame-canvas').classList.add('active');
+      
+      // End game after 10s
+      setTimeout(() => {
+        minigameActive = false;
+        minigameTimer = 10;
+        document.getElementById('game-over-text').style.opacity = '1';
+        document.getElementById('minigame-canvas').classList.remove('active');
+      }, 10000);
+    }
+  }
+
   function init() {
     initThree();
     initLenis();
@@ -738,6 +938,8 @@
     initMobileTouchScroll();
     initCursor();
     initModals();
+    initConstellations();
+    initMinigame();
     
     if (lenisInstance) lenisInstance.stop();
 

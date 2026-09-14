@@ -344,7 +344,7 @@ body {
    ========================================================================== */
 .sequence-section {
   position: relative;
-  height: 2800vh;
+  height: 3000vh;
   background-color: var(--paper);
 }
 
@@ -2092,5 +2092,86 @@ body {
   .case-modal-inner {
     padding: 30px 24px;
   }
+}
+
+
+/* ==========================================================================
+   Holographic Glass Tilt Cards
+   ========================================================================== */
+.achieve-card {
+  transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.1s;
+  transform-style: preserve-3d;
+  position: relative;
+  overflow: hidden;
+}
+
+.achieve-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  mix-blend-mode: overlay;
+}
+
+.achieve-card:hover::before {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Interactive Skill Constellations
+   ========================================================================== */
+.constellation-line {
+  stroke: rgba(56, 189, 248, 0);
+  stroke-width: 2px;
+  stroke-dasharray: 10 5;
+  transition: stroke 0.4s ease, filter 0.4s ease;
+}
+
+.constellation-line.active {
+  stroke: rgba(56, 189, 248, 0.8);
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
+  animation: energy-pulse 1s linear infinite;
+}
+
+@keyframes energy-pulse {
+  to { stroke-dashoffset: -15; }
+}
+
+/* ==========================================================================
+   Easter Egg Minigame Canvas
+   ========================================================================== */
+#minigame-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none; /* Mouse handled globally, drawn here */
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+#minigame-canvas.active {
+  opacity: 1;
+  pointer-events: auto;
+  cursor: crosshair !important;
+}
+
+#game-over-text {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #38bdf8;
+  font-family: var(--display);
+  font-size: 3rem;
+  font-weight: 800;
+  text-shadow: 0 0 20px rgba(56,189,248,0.8);
+  z-index: 10001;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s;
 }
 
