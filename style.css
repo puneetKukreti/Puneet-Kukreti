@@ -547,8 +547,8 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center 15%;
-  /* mix-blend-mode: screen; */ /* Makes dark studio background 100% transparent! */
-  filter: contrast(1.1) brightness(1.05);
+  background: transparent;
+  display: block;
   pointer-events: none;
   z-index: 2;
 }
