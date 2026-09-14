@@ -150,7 +150,20 @@
 
     const startZ = 2000;
     const endZ = -24500;
-    const camZ = startZ + currentProgress * (endZ - startZ);
+
+    // Cinematic camera trajectory:
+    // Smoothly decelerates as it approaches ACHIEVEMENTS (layer-cases at z = -20200)
+    // framing the composition closer at dist ≈ 1000 - 1180, where it occupies 80-85% viewport width
+    // and 70-80% viewport height, providing an unhurried, comfortable reading zone.
+    let camZ;
+    if (currentProgress < 0.70 || currentProgress > 0.90) {
+      camZ = startZ + currentProgress * (endZ - startZ);
+    } else {
+      const t = (currentProgress - 0.70) / 0.20;
+      const deltaT = t - 0.5;
+      const curveT = 0.5 + 0.5 * Math.pow(2 * deltaT, 3);
+      camZ = -16550 + (0.45 * t + 0.55 * curveT) * (-21850 - (-16550));
+    }
 
     camera.position.x = currentCamX;
     camera.position.y = currentCamY;
@@ -165,7 +178,7 @@
     // Update active section HUD label based on compact depth
     let currentSection = "INTRO";
     if (camZ < -22400) currentSection = "CONTACT";
-    else if (camZ < -17800) currentSection = "ACHIEVEMENTS";
+    else if (camZ < -17400) currentSection = "ACHIEVEMENTS";
     else if (camZ < -13000) currentSection = "METRICS";
     else if (camZ < -8000) currentSection = "SKILLS";
     else if (camZ < -3200) currentSection = "BIO";
@@ -212,15 +225,18 @@
       // Distance from camera to object along Z (positive = object is in front of camera)
       const dist = camera.position.z - item.obj.position.z;
       
-      if (dist <= 160 && item.config.id !== 'layer-contact') {
+      const nearCullDist = item.config.id === 'layer-cases' ? 100 : 160;
+      const exitFadeDist = item.config.id === 'layer-cases' ? 320 : 460;
+
+      if (dist <= nearCullDist && item.config.id !== 'layer-contact') {
         // Safe near-plane culling: element is too close or behind camera -> strictly hidden
         item.el.style.opacity = '0';
         item.el.style.filter = 'none';
         item.el.style.visibility = 'hidden';
         item.el.style.pointerEvents = 'none';
-      } else if (dist < 460 && item.config.id !== 'layer-contact') {
-        // Exiting smoothly past camera -> gentle fade out from dist=460 down to dist=160
-        const exitAlpha = Math.max(0, (dist - 160) / 300);
+      } else if (dist < exitFadeDist && item.config.id !== 'layer-contact') {
+        // Exiting smoothly past camera
+        const exitAlpha = Math.max(0, (dist - nearCullDist) / (exitFadeDist - nearCullDist));
         item.el.style.opacity = exitAlpha.toFixed(2);
         item.el.style.filter = 'none';
         item.el.style.visibility = exitAlpha > 0.02 ? 'visible' : 'hidden';

@@ -1366,8 +1366,8 @@ body {
    Layer 5: Achievements (Automated Systems)
    ========================================================================== */
 .achieve-container {
-  max-width: 1360px;
-  width: min(1320px, 94vw);
+  max-width: 1480px;
+  width: min(1440px, 85vw);
   margin: 0 auto;
   text-align: left;
 }
@@ -1376,8 +1376,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  gap: 40px;
-  margin-bottom: 40px;
+  gap: 32px;
+  margin-bottom: 20px;
 }
 
 .achieve-title-col {
@@ -1387,18 +1387,18 @@ body {
 
 .achieve-meta {
   font-family: var(--body);
-  font-size: clamp(12px, 1.05vw, 14px);
+  font-size: 11px;
   letter-spacing: 0.35em;
   text-transform: uppercase;
   color: var(--ink-dim);
-  margin-bottom: 14px;
+  margin-bottom: 6px;
 }
 
 .achieve-heading {
   font-family: var(--display);
-  font-size: clamp(28px, 4.2vw, 54px);
+  font-size: clamp(24px, 2.7vw, 38px);
   font-weight: 900;
-  line-height: 1.15;
+  line-height: 1.12;
   letter-spacing: -0.01em;
   color: var(--ink);
   text-transform: uppercase;
@@ -1410,65 +1410,66 @@ body {
 
 .achieve-desc {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(15px, 1.35vw, 19px);
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.65;
+  font-size: clamp(13.5px, 1.05vw, 15.5px);
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.5;
   font-weight: 400;
 }
 
 .achieve-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(18px, 2.2vw, 30px);
-  margin-bottom: 32px;
+  gap: clamp(18px, 1.8vw, 28px);
+  margin-bottom: 18px;
 }
 
 .achieve-card {
-  background: rgba(10, 14, 22, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(10, 15, 24, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 20px;
-  padding: clamp(24px, 2.5vw, 34px);
+  padding: clamp(24px, 2.1vw, 32px);
   display: flex;
   flex-direction: column;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease;
-  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55);
 }
 
 .achieve-card:hover {
-  transform: translateY(-10px);
-  border-color: rgba(255, 255, 255, 0.38);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 40px rgba(56, 189, 248, 0.18);
+  transform: translateY(-8px);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(56, 189, 248, 0.15);
 }
 
 .card-top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
 }
 
 .card-num {
   font-family: var(--display);
-  font-size: clamp(15px, 1.3vw, 18px);
-  font-weight: 900;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.05em;
 }
 
 .card-category {
   font-family: var(--body);
-  font-size: clamp(11.5px, 1vw, 13px);
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .card-visual {
   width: 100%;
-  height: 145px;
-  margin: 6px 0 16px 0;
+  height: 120px;
+  margin: 4px 0 12px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1485,52 +1486,60 @@ body {
 .card-metric {
   display: flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 6px 8px;
   font-family: var(--body);
-  font-size: clamp(13px, 1.15vw, 16px);
+  font-size: clamp(16px, 1.25vw, 19px);
   font-weight: 800;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
+  line-height: 1.25;
 }
 
 .metric-from {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .metric-arrow {
-  color: rgba(255, 255, 255, 0.5);
+  color: #38bdf8;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+  margin: 0 2px;
 }
 
 .metric-to {
   color: #ffffff;
-  text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+  font-weight: 900;
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.7);
 }
 
 .card-title {
   font-family: var(--display);
-  font-size: clamp(20px, 1.7vw, 25px);
+  font-size: clamp(18px, 1.45vw, 22px);
   font-weight: 800;
   color: #ffffff;
   line-height: 1.3;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .card-description {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(14px, 1.15vw, 16.5px);
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.7;
-  margin-bottom: 26px;
+  font-size: clamp(15px, 1.1vw, 16.5px);
+  color: rgba(255, 255, 255, 0.86);
+  line-height: 1.75;
+  margin-bottom: 22px;
   flex-grow: 1;
+  font-weight: 400;
 }
 
 .card-footer {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   gap: 16px;
   margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .card-tags {
@@ -1541,22 +1550,23 @@ body {
 
 .tag-pill {
   font-family: var(--body);
-  font-size: clamp(11px, 0.95vw, 13px);
-  color: rgba(255, 255, 255, 0.85);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: clamp(11px, 0.85vw, 12px);
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 999px;
-  padding: 6px 13px;
+  padding: 5px 12px;
   white-space: nowrap;
+  letter-spacing: 0.04em;
 }
 
 .card-action-btn {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -1565,16 +1575,11 @@ body {
   transition: all 0.3s ease;
 }
 
-.card-action-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
 .card-action-btn:hover {
   background: #ffffff;
   color: #000000;
   border-color: #ffffff;
-  transform: scale(1.12);
+  transform: scale(1.1);
 }
 
 .achieve-footer {
@@ -1582,22 +1587,45 @@ body {
   align-items: center;
   justify-content: flex-end;
   gap: 16px;
-  margin-top: 14px;
-  opacity: 0.8;
+  margin-top: 8px;
+  opacity: 0.7;
 }
 
 .achieve-footer-text {
   font-family: var(--body);
-  font-size: clamp(11.5px, 0.95vw, 13px);
+  font-size: 11px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .achieve-footer-line {
-  width: 44px;
-  height: 1.5px;
-  background: rgba(255, 255, 255, 0.45);
+  width: 40px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+@media (min-width: 861px) and (max-width: 1100px) {
+  .achieve-container {
+    width: 92vw;
+    max-width: 1040px;
+  }
+  .achieve-grid {
+    gap: 16px;
+  }
+  .achieve-card {
+    padding: 20px 16px;
+  }
+  .card-metric {
+    font-size: 15.5px;
+  }
+  .card-title {
+    font-size: 18px;
+  }
+  .card-description {
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
 }
 
 @media (max-width: 860px) {
@@ -1697,14 +1725,24 @@ body {
     transform: none !important;
   }
 
+  .card-metric {
+    font-size: 17px !important;
+    line-height: 1.3 !important;
+  }
+
   .card-title {
-    font-size: clamp(18px, 4.5vw, 22px) !important;
+    font-size: 19px !important;
+    line-height: 1.3 !important;
   }
 
   .card-description {
-    font-size: clamp(13.5px, 3.5vw, 15px) !important;
-    line-height: 1.6 !important;
-    margin-bottom: 18px !important;
+    font-size: 15px !important;
+    line-height: 1.7 !important;
+    margin-bottom: 20px !important;
+  }
+
+  .tag-pill {
+    font-size: 11.5px !important;
   }
 }
 
