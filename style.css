@@ -13,16 +13,6 @@
   --body: 'Space Grotesk', sans-serif;
 }
 
-/* Force Black & White globally on colored assets */
-.planet-container, 
-.visual-svg, 
-.portrait-img, 
-.status-dot, 
-.metric-arrow,
-.tab-btn {
-  filter: grayscale(100%) !important;
-}
-
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
