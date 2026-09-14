@@ -14,6 +14,8 @@
   let mouseY = 0;
   let currentCamX = 0;
   let currentCamY = 0;
+  let isMouseHovering = false;
+  let hoverIdleTimer = null;
 
   function initThree() {
     scene = new THREE.Scene();
@@ -109,9 +111,23 @@
   }
 
   function onMouseMove(e) {
+    // Only desktop pointer devices
+    if (window.innerWidth <= 860) return;
+
     mouseX = (e.clientX / window.innerWidth) * 2 - 1;
     mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    isMouseHovering = true;
+
+    clearTimeout(hoverIdleTimer);
+    // When the user stops moving the mouse, smoothly return to the center!
+    hoverIdleTimer = setTimeout(() => {
+      isMouseHovering = false;
+    }, 700);
   }
+
+  window.addEventListener('mouseleave', () => {
+    isMouseHovering = false;
+  });
 
   function updateScrollTarget() {
     const scrollY = window.scrollY || window.pageYOffset;
@@ -125,10 +141,12 @@
     // Smooth, cinematic camera deceleration (slower, softer, deliberate pacing)
     currentProgress += (targetProgress - currentProgress) * 0.035;
 
-    const targetCamX = mouseX * 300;
-    const targetCamY = mouseY * 300;
-    currentCamX += (targetCamX - currentCamX) * 0.05;
-    currentCamY += (targetCamY - currentCamY) * 0.05;
+    // Gentle, controlled hover parallax when actively moving mouse;
+    // Returns smoothly to the middle (0, 0) when user stops hovering or on mobile!
+    const targetCamX = isMouseHovering ? (mouseX * 45) : 0;
+    const targetCamY = isMouseHovering ? (mouseY * 35) : 0;
+    currentCamX += (targetCamX - currentCamX) * 0.04;
+    currentCamY += (targetCamY - currentCamY) * 0.04;
 
     const startZ = 2000;
     const endZ = -24500;
@@ -212,7 +230,11 @@
         item.el.style.opacity = '1';
         item.el.style.filter = 'none';
         item.el.style.visibility = 'visible';
-        item.el.style.pointerEvents = dist < 1800 ? 'auto' : 'none';
+        if (window.innerWidth <= 860) {
+          item.el.style.pointerEvents = 'none';
+        } else {
+          item.el.style.pointerEvents = dist < 1800 ? 'auto' : 'none';
+        }
       } else if (dist <= 6200) {
         // Approaching in distance -> smooth depth-of-field transition (starts blurred, clarifies slowly)
         const approachProgress = (6200 - dist) / (6200 - 2600);
@@ -243,13 +265,14 @@
     if (typeof Lenis !== 'undefined') {
       try {
         lenisInstance = new Lenis({
-          duration: 1.8,
+          duration: 1.6,
           easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
           orientation: 'vertical',
           gestureOrientation: 'vertical',
           smoothWheel: true,
+          syncTouch: true,
           wheelMultiplier: 0.38,
-          touchMultiplier: 0.65,
+          touchMultiplier: 0.85,
           autoResize: true,
           infinite: false
         });
@@ -387,11 +410,99 @@
     setupTabGroup('achieve-tabs', 'achieve-grid', 'achieve-card');
   }
 
+  function initMobileTouchScroll() {
+    let touchStartY = 0;
+    let touchStartX = 0;
+    let isTrackingTouch = false;
+    let isVerticalScrollMode = false;
+    let isHorizontalScrollMode = false;
+
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+        isTrackingTouch = true;
+        isVerticalScrollMode = false;
+        isHorizontalScrollMode = false;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isTrackingTouch || e.touches.length !== 1) return;
+
+      const currentY = e.touches[0].clientY;
+      const currentX = e.touches[0].clientX;
+      const deltaY = touchStartY - currentY;
+      const deltaX = touchStartX - currentX;
+
+      const target = e.target;
+      const isInsideCarousel = target && (target.closest('.skills-grid') || target.closest('.achieve-grid'));
+
+      if (isInsideCarousel) {
+        if (!isVerticalScrollMode && !isHorizontalScrollMode) {
+          if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 6) {
+            isHorizontalScrollMode = true;
+          } else if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 6) {
+            isVerticalScrollMode = true;
+          }
+        }
+
+        if (isHorizontalScrollMode) {
+          // Horizontal swipe between carousel cards
+          return;
+        }
+
+        if (isVerticalScrollMode) {
+          // Vertical swipe over cards -> drive page scroll
+          const maxScroll = document.body.scrollHeight - window.innerHeight;
+          const currentScroll = window.scrollY || window.pageYOffset;
+          const targetScroll = Math.max(0, Math.min(maxScroll, currentScroll + deltaY * 1.3));
+
+          if (lenisInstance && typeof lenisInstance.scrollTo === 'function') {
+            lenisInstance.scrollTo(targetScroll, { immediate: true });
+          } else {
+            window.scrollBy(0, deltaY * 1.3);
+          }
+          touchStartY = currentY;
+          touchStartX = currentX;
+        }
+      } else {
+        // Touching anywhere else on mobile content or background
+        if (Math.abs(deltaY) > 3) {
+          const maxScroll = document.body.scrollHeight - window.innerHeight;
+          const currentScroll = window.scrollY || window.pageYOffset;
+          const targetScroll = Math.max(0, Math.min(maxScroll, currentScroll + deltaY * 1.25));
+
+          if (lenisInstance && typeof lenisInstance.scrollTo === 'function') {
+            lenisInstance.scrollTo(targetScroll, { immediate: true });
+          } else {
+            window.scrollBy(0, deltaY * 1.25);
+          }
+          touchStartY = currentY;
+          touchStartX = currentX;
+        }
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      isTrackingTouch = false;
+      isVerticalScrollMode = false;
+      isHorizontalScrollMode = false;
+    }, { passive: true });
+
+    window.addEventListener('touchcancel', () => {
+      isTrackingTouch = false;
+      isVerticalScrollMode = false;
+      isHorizontalScrollMode = false;
+    }, { passive: true });
+  }
+
   function init() {
     initThree();
     initLenis();
     updateScrollTarget();
     initHorizontalTabs();
+    initMobileTouchScroll();
     
     setTimeout(() => {
       const p = document.getElementById('preloader');
