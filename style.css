@@ -873,75 +873,277 @@ body {
 .skill-node.node-4 { transform: translateY(4px); }
 .skill-node.node-5 { transform: translateY(14px); }
 
-.skill-sphere {
-  width: clamp(74px, 6.2vw, 86px);
-  height: clamp(74px, 6.2vw, 86px);
-  border-radius: 50%;
+/* ==========================================================================
+   Celestial Planetary System (Skills Constellation)
+   ========================================================================== */
+.planet-container {
   position: relative;
+  width: clamp(80px, 6.8vw, 94px);
+  height: clamp(80px, 6.8vw, 94px);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 40%, rgba(12, 16, 26, 0.75) 75%, rgba(6, 9, 16, 0.95) 100%);
-  border: 1.2px solid rgba(255, 255, 255, 0.28);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.35), inset 0 -3px 8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
   cursor: pointer;
+  animation: planetFloat 6s ease-in-out infinite;
 }
 
-.sphere-glow {
+.p-node-1 .planet-container { animation-delay: 0s; }
+.p-node-2 .planet-container { animation-delay: -1.2s; }
+.p-node-3 .planet-container { animation-delay: -2.4s; }
+.p-node-4 .planet-container { animation-delay: -3.6s; }
+.p-node-5 .planet-container { animation-delay: -4.8s; }
+
+@keyframes planetFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+
+/* 3D Planet Sphere Body */
+.planet-sphere {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 3D spherical shading: bright sunlit crescent on upper-left, deep shadow on lower-right */
+  background: radial-gradient(circle at 32% 28%, var(--p-highlight) 0%, var(--p-mid) 42%, var(--p-dark) 78%, #030508 100%);
+  /* Luminous atmospheric limb & deep space corona */
+  box-shadow: 
+    inset 2px 3px 6px rgba(255, 255, 255, 0.55),
+    inset -7px -9px 18px rgba(0, 0, 0, 0.92),
+    inset 0 0 14px var(--p-glow),
+    0 0 20px var(--p-corona),
+    0 0 45px var(--p-haze);
+  border: 1.2px solid var(--p-rim);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+}
+
+/* Planetary Atmospheric Corona Haze */
+.planet-atmosphere {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, transparent 65%, var(--p-corona) 100%);
+  pointer-events: none;
+  filter: blur(5px);
+  opacity: 0.65;
+  z-index: 2;
+}
+
+/* Atmospheric Cloud Bands */
+.planet-bands {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-linear-gradient(
+    -25deg,
+    transparent 0px,
+    transparent 8px,
+    rgba(255, 255, 255, 0.05) 9px,
+    transparent 14px,
+    rgba(0, 0, 0, 0.18) 18px,
+    transparent 24px
+  );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Specular Sunlight Reflection */
+.planet-specular {
   position: absolute;
   top: 10%;
-  left: 20%;
+  left: 18%;
   width: 32%;
-  height: 22%;
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 80%);
+  height: 20%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 75%);
   border-radius: 50%;
-  pointer-events: none;
   transform: rotate(-25deg);
+  pointer-events: none;
+  z-index: 3;
 }
 
+/* Icon inside planet center */
 .sphere-icon {
+  position: relative;
+  z-index: 4;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
-  transition: transform 0.3s ease;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.85));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.skill-sphere:hover {
-  transform: translateY(-8px) scale(1.08);
+/* Planetary Rings (Saturn-Style 3D Rings) */
+.ring-wrapper {
+  position: absolute;
+  inset: -22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-20deg);
+  pointer-events: none;
 }
 
-.skill-sphere:hover .sphere-icon {
-  transform: scale(1.1);
+.ring-back {
+  z-index: 1;
+  clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
 }
 
-/* Individual Sphere Glow Accents */
-.sphere-excel:hover {
-  border-color: rgba(16, 124, 65, 0.8);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 32px rgba(16, 124, 65, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+.ring-front {
+  z-index: 5;
+  clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
 }
 
-.sphere-python:hover {
-  border-color: rgba(56, 126, 184, 0.8);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 32px rgba(56, 126, 184, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+.ring-ellipse {
+  position: absolute;
+  width: 100%;
+  height: 34%;
+  border-radius: 50%;
+  border: 1.5px solid var(--r-color);
+  box-shadow: 0 0 10px var(--r-glow), inset 0 0 6px var(--r-glow);
+  opacity: 0.8;
+  transition: opacity 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
-.sphere-ai:hover {
-  border-color: rgba(96, 165, 250, 0.8);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 32px rgba(96, 165, 250, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+.ring-outer {
+  position: absolute;
+  width: 116%;
+  height: 40%;
+  border-radius: 50%;
+  border: 1px dashed var(--r-faint);
+  opacity: 0.45;
+  transition: opacity 0.4s ease;
 }
 
-.sphere-langchain:hover {
-  border-color: rgba(45, 212, 191, 0.8);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 32px rgba(45, 212, 191, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+/* Orbiting Celestial Moon */
+.planet-moon-track {
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 6;
+  animation: moonOrbit 8s linear infinite;
 }
 
-.sphere-webdev:hover {
-  border-color: rgba(192, 132, 252, 0.8);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 32px rgba(192, 132, 252, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+.planet-moon {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 8px #ffffff, 0 0 14px var(--p-glow);
+  transform: translate(-50%, -50%);
+}
+
+@keyframes moonOrbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Hover Dynamics */
+.planet-container:hover .planet-sphere {
+  transform: scale(1.08);
+  box-shadow: 
+    inset 2px 3px 8px rgba(255, 255, 255, 0.8),
+    inset -7px -9px 20px rgba(0, 0, 0, 0.95),
+    inset 0 0 20px var(--p-glow),
+    0 0 30px var(--p-corona),
+    0 0 65px var(--p-haze);
+}
+
+.planet-container:hover .ring-ellipse {
+  opacity: 1;
+  border-color: #ffffff;
+  box-shadow: 0 0 14px var(--r-glow), 0 0 20px #ffffff;
+}
+
+.planet-container:hover .ring-outer {
+  opacity: 0.75;
+}
+
+.planet-container:hover .sphere-icon {
+  transform: scale(1.12);
+}
+
+/* ==========================================================================
+   Distinct Planetary Color Palettes
+   ========================================================================== */
+/* 1. Excel (Emerald Gas / Terrestrial) */
+.planet-excel {
+  --p-highlight: rgba(52, 211, 153, 0.45);
+  --p-mid: rgba(16, 124, 65, 0.55);
+  --p-dark: rgba(6, 46, 24, 0.85);
+  --p-rim: rgba(52, 211, 153, 0.65);
+  --p-glow: rgba(52, 211, 153, 0.6);
+  --p-corona: rgba(16, 124, 65, 0.5);
+  --p-haze: rgba(16, 124, 65, 0.25);
+  --r-color: rgba(110, 231, 183, 0.75);
+  --r-glow: rgba(52, 211, 153, 0.55);
+  --r-faint: rgba(52, 211, 153, 0.35);
+}
+
+/* 2. Python (Jovian Azure & Solar Gold) */
+.planet-python {
+  --p-highlight: rgba(250, 204, 21, 0.45);
+  --p-mid: rgba(56, 126, 184, 0.6);
+  --p-dark: rgba(15, 34, 64, 0.9);
+  --p-rim: rgba(250, 204, 21, 0.7);
+  --p-glow: rgba(56, 126, 184, 0.7);
+  --p-corona: rgba(56, 126, 184, 0.55);
+  --p-haze: rgba(250, 204, 21, 0.25);
+  --r-color: rgba(253, 224, 71, 0.8);
+  --r-glow: rgba(56, 126, 184, 0.65);
+  --r-faint: rgba(250, 204, 21, 0.4);
+}
+
+/* 3. AI Integration (Sapphire Pulsar) */
+.planet-ai {
+  --p-highlight: rgba(147, 197, 253, 0.5);
+  --p-mid: rgba(37, 99, 235, 0.6);
+  --p-dark: rgba(15, 23, 42, 0.92);
+  --p-rim: rgba(96, 165, 250, 0.75);
+  --p-glow: rgba(59, 130, 246, 0.75);
+  --p-corona: rgba(59, 130, 246, 0.55);
+  --p-haze: rgba(96, 165, 250, 0.28);
+  --r-color: rgba(147, 197, 253, 0.8);
+  --r-glow: rgba(59, 130, 246, 0.65);
+  --r-faint: rgba(147, 197, 253, 0.4);
+}
+
+/* 4. LangChain (Aquamarine Ice Giant) */
+.planet-langchain {
+  --p-highlight: rgba(94, 234, 212, 0.5);
+  --p-mid: rgba(13, 148, 136, 0.6);
+  --p-dark: rgba(4, 47, 46, 0.92);
+  --p-rim: rgba(45, 212, 191, 0.75);
+  --p-glow: rgba(45, 212, 191, 0.75);
+  --p-corona: rgba(20, 184, 166, 0.55);
+  --p-haze: rgba(45, 212, 191, 0.28);
+  --r-color: rgba(94, 234, 212, 0.8);
+  --r-glow: rgba(20, 184, 166, 0.65);
+  --r-faint: rgba(94, 234, 212, 0.4);
+}
+
+/* 5. AI-Assisted Web Dev (Amethyst Nebula Exoplanet) */
+.planet-webdev {
+  --p-highlight: rgba(232, 121, 249, 0.5);
+  --p-mid: rgba(147, 51, 234, 0.6);
+  --p-dark: rgba(46, 16, 101, 0.92);
+  --p-rim: rgba(192, 132, 252, 0.75);
+  --p-glow: rgba(168, 85, 247, 0.75);
+  --p-corona: rgba(168, 85, 247, 0.55);
+  --p-haze: rgba(232, 121, 249, 0.28);
+  --r-color: rgba(216, 180, 254, 0.8);
+  --r-glow: rgba(168, 85, 247, 0.65);
+  --r-faint: rgba(216, 180, 254, 0.4);
 }
 
 .skill-title {
