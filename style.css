@@ -1322,51 +1322,6 @@ body {
 }
 
 /* ==========================================================================
-   Layer 4: Perspective in Numbers
-   ========================================================================== */
-.numbers-container {
-  max-width: 960px;
-  width: 100%;
-}
-
-.numbers-heading {
-  font-family: var(--display);
-  font-size: clamp(26px, 3.8vw, 44px);
-  font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 24px;
-}
-
-.numbers-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(24px, 4vw, 48px);
-  margin-top: 36px;
-}
-
-.number-item {
-  border-top: 1px solid var(--line);
-  padding-top: 18px;
-}
-
-.num-val {
-  font-family: var(--display);
-  font-size: clamp(36px, 5.2vw, 68px);
-  font-weight: 900;
-  color: var(--ink);
-  line-height: 1;
-}
-
-.num-lbl {
-  font-family: var(--body);
-  font-size: 13px;
-  color: var(--ink-dim);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-top: 10px;
-}
-
-/* ==========================================================================
    Layer 5: Achievements (Automated Systems)
    ========================================================================== */
 .achieve-container {
@@ -1894,10 +1849,6 @@ body {
   .client-wall {
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
-  }
-
-  .numbers-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 
   .header {

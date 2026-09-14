@@ -79,7 +79,6 @@
       { id: 'layer-ring', z: -700 },
       { id: 'layer-pitch', z: -5500 },
       { id: 'layer-decade', z: -10500 },
-      { id: 'layer-numbers', z: -15500 },
       { id: 'layer-cases', z: -20200 },
       { id: 'layer-contact', z: -24500 }
     ];
@@ -179,9 +178,8 @@
     let currentSection = "INTRO";
     if (camZ < -22400) currentSection = "CONTACT";
     else if (camZ < -17400) currentSection = "ACHIEVEMENTS";
-    else if (camZ < -13000) currentSection = "METRICS";
     else if (camZ < -8000) currentSection = "SKILLS";
-    else if (camZ < -3200) currentSection = "BIO";
+    else if (camZ < -3200) currentSection = "EXPERIENCE";
 
     const sectionLabel = document.getElementById('section-name');
     if (sectionLabel && sectionLabel.textContent !== currentSection) {
