@@ -376,6 +376,8 @@ body {
   justify-content: center;
   padding: 2rem;
   transform-style: preserve-3d;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   pointer-events: none;
   will-change: transform, opacity, filter;
   /* opacity: 0; */
