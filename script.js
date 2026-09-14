@@ -8,7 +8,6 @@
 
   let scene, camera, cssRenderer, webglRenderer;
   let starMesh;
-  let debrisArray = [];
   const objects = [];
 
   let mouseX = 0;
@@ -74,36 +73,6 @@
     });
     starMesh = new THREE.Points(starGeo, starMat);
     scene.add(starMesh);
-
-    // Floating 3D Geometric Debris
-    const icosaGeo = new THREE.IcosahedronGeometry(1, 0);
-    const torusGeo = new THREE.TorusGeometry(1, 0.3, 8, 16);
-    const debrisMat1 = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.3 });
-    const debrisMat2 = new THREE.MeshBasicMaterial({ color: 0xffe052, wireframe: true, transparent: true, opacity: 0.2 });
-
-    for (let i = 0; i < 60; i++) {
-      const isTorus = Math.random() > 0.5;
-      const mesh = new THREE.Mesh(isTorus ? torusGeo : icosaGeo, Math.random() > 0.5 ? debrisMat1 : debrisMat2);
-      
-      const scale = 150 + Math.random() * 300;
-      mesh.scale.set(scale, scale, scale);
-      
-      mesh.position.x = (Math.random() - 0.5) * 12000;
-      mesh.position.y = (Math.random() - 0.5) * 8000;
-      mesh.position.z = 2000 - Math.random() * 37000;
-      
-      mesh.rotation.x = Math.random() * Math.PI;
-      mesh.rotation.y = Math.random() * Math.PI;
-      
-      // Random rotation speeds
-      mesh.userData = {
-        rx: (Math.random() - 0.5) * 0.02,
-        ry: (Math.random() - 0.5) * 0.02
-      };
-      
-      scene.add(mesh);
-      debrisArray.push(mesh);
-    }
 
     const layerConfigs = [
       { id: 'layer-hero', z: 1000 },
@@ -179,15 +148,6 @@
     currentCamY += (targetCamY - currentCamY) * 0.04;
 
     checkMinigameTrigger();
-
-    if (nebulaUniforms) {
-      // Removed nebula logic
-    }
-
-    debrisArray.forEach(mesh => {
-      mesh.rotation.x += mesh.userData.rx;
-      mesh.rotation.y += mesh.userData.ry;
-    });
 
     const startZ = 2000;
     const endZ = -24500;
