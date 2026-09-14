@@ -7,7 +7,7 @@
   const stickyWrapper = document.querySelector('.sequence-sticky-wrapper');
 
   let scene, camera, cssRenderer, webglRenderer;
-  let starMesh, warpLinesMesh;
+  let starMesh;
   const objects = [];
 
   let mouseX = 0;
@@ -74,25 +74,6 @@
     starMesh = new THREE.Points(starGeo, starMat);
     scene.add(starMesh);
 
-    const warpGeo = new THREE.BufferGeometry();
-    const warpCount = 2000;
-    const warpPos = new Float32Array(warpCount * 6);
-    for (let i = 0; i < warpCount * 6; i += 6) {
-      const x = (Math.random() - 0.5) * 12000;
-      const y = (Math.random() - 0.5) * 8000;
-      const z = 2000 - Math.random() * 37000;
-      warpPos[i] = x; warpPos[i+1] = y; warpPos[i+2] = z;
-      warpPos[i+3] = x; warpPos[i+4] = y; warpPos[i+5] = z - 2000;
-    }
-    warpGeo.setAttribute('position', new THREE.BufferAttribute(warpPos, 3));
-    const warpMat = new THREE.LineBasicMaterial({
-      color: 0x38bdf8,
-      transparent: true,
-      opacity: 0
-    });
-    warpLinesMesh = new THREE.LineSegments(warpGeo, warpMat);
-    scene.add(warpLinesMesh);
-
     const layerConfigs = [
       { id: 'layer-hero', z: 1000 },
       { id: 'layer-ring', z: -700 },
@@ -156,25 +137,8 @@
   function renderLoop() {
     if (lenisInstance) lenisInstance.raf(Date.now());
 
-    // Calculate scroll velocity
-    const velocity = Math.abs(targetProgress - currentProgress);
-
     // Smooth, cinematic camera deceleration
     currentProgress += (targetProgress - currentProgress) * 0.035;
-
-    // Warp Speed Effect
-    if (warpLinesMesh) {
-      // Base scale + velocity multiplier
-      const stretch = 1 + (velocity * 2000); 
-      warpLinesMesh.scale.z = stretch;
-      
-      // Fade in lines based on speed
-      const targetOpacity = Math.min(1, velocity * 50);
-      warpLinesMesh.material.opacity += (targetOpacity - warpLinesMesh.material.opacity) * 0.1;
-      
-      // Slightly push stars back based on stretch to avoid clipping
-      warpLinesMesh.position.z = -stretch * 500;
-    }
 
     // Gentle, controlled hover parallax when actively moving mouse;
     // Returns smoothly to the middle (0, 0) when user stops hovering or on mobile!
