@@ -169,39 +169,52 @@
     objects.forEach(item => {
       const distBehind = item.obj.position.z - camera.position.z;
       
-      if (distBehind > 500) {
-        // Object is behind the camera -> fully hidden
+      if (distBehind > 900) {
+        // Object is well behind camera -> completely hidden
         item.el.style.opacity = '0';
+        item.el.style.filter = 'none';
         item.el.style.visibility = 'hidden';
         item.el.style.pointerEvents = 'none';
       } else if (distBehind > 0) {
-        // Object is actively passing behind camera -> fade out smoothly
-        const fadeOut = Math.max(0, 1 - (distBehind / 500));
-        item.el.style.opacity = fadeOut.toFixed(3);
-        item.el.style.visibility = fadeOut > 0.01 ? 'visible' : 'hidden';
+        // Object is flying past behind camera -> fade out with progressive zoom blur
+        const exitProgress = Math.min(1, distBehind / 900);
+        const exitOpacity = Math.max(0, 1 - exitProgress);
+        const exitBlur = exitProgress * 10;
+        
+        item.el.style.opacity = exitOpacity.toFixed(3);
+        item.el.style.filter = exitBlur > 0.4 ? `blur(${exitBlur.toFixed(1)}px)` : 'none';
+        item.el.style.visibility = exitOpacity > 0.01 ? 'visible' : 'hidden';
         item.el.style.pointerEvents = 'none';
       } else {
         // Object is in front of the camera (upcoming)
         const distAhead = -distBehind;
-        const maxDist = 3200; // Do not show objects until camera is within this distance
-        const minDist = 1800; // Full opacity when camera is this close
+        const maxDist = 4800; // Horizon distance: starts appearing as current content exits
+        const inFocusDist = 1400; // In-focus distance: completely clear & sharp
         
         if (distAhead > maxDist) {
-          // Too far ahead -> completely hidden to prevent visual clutter/glitches
+          // Beyond horizon -> completely hidden
           item.el.style.opacity = '0';
+          item.el.style.filter = 'none';
           item.el.style.visibility = 'hidden';
           item.el.style.pointerEvents = 'none';
-        } else if (distAhead > minDist) {
-          // Approaching -> smoothly fade in
-          const fadeIn = (maxDist - distAhead) / (maxDist - minDist);
-          item.el.style.opacity = fadeIn.toFixed(3);
+        } else if (distAhead > inFocusDist) {
+          // Approaching: smooth depth-of-field transition (starts blurred, clarifies slowly)
+          const approachProgress = (maxDist - distAhead) / (maxDist - inFocusDist);
+          // Ease curve: gentle start so distant text is subtle and soft
+          const opacity = Math.pow(approachProgress, 1.25);
+          // Blur starts at 16px and drops to 0px as camera approaches
+          const blurAmount = (1 - approachProgress) * 16;
+          
+          item.el.style.opacity = opacity.toFixed(3);
+          item.el.style.filter = blurAmount > 0.4 ? `blur(${blurAmount.toFixed(1)}px)` : 'none';
           item.el.style.visibility = 'visible';
           item.el.style.pointerEvents = 'none';
         } else {
-          // In focus range -> fully visible
+          // In focus range -> fully crisp, 0 blur, 100% opacity
           item.el.style.opacity = '1';
+          item.el.style.filter = 'none';
           item.el.style.visibility = 'visible';
-          item.el.style.pointerEvents = distAhead < 1500 ? 'auto' : 'none';
+          item.el.style.pointerEvents = distAhead < 1200 ? 'auto' : 'none';
         }
       }
     });
