@@ -547,10 +547,8 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center 15%;
-  background: transparent;
-  display: block;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+  /* mix-blend-mode: screen; */ /* Makes dark studio background 100% transparent! */
+  filter: contrast(1.1) brightness(1.05);
   pointer-events: none;
   z-index: 2;
 }
