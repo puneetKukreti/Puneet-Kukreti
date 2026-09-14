@@ -167,19 +167,42 @@
     }
 
     objects.forEach(item => {
-      // If object is more than 300 units behind the camera, fade it out to prevent clipping abruptly
       const distBehind = item.obj.position.z - camera.position.z;
+      
       if (distBehind > 500) {
+        // Object is behind the camera -> fully hidden
         item.el.style.opacity = '0';
+        item.el.style.visibility = 'hidden';
         item.el.style.pointerEvents = 'none';
       } else if (distBehind > 0) {
-        // Fade out as it passes the camera
-        item.el.style.opacity = Math.max(0, 1 - (distBehind / 500)).toString();
+        // Object is actively passing behind camera -> fade out smoothly
+        const fadeOut = Math.max(0, 1 - (distBehind / 500));
+        item.el.style.opacity = fadeOut.toFixed(3);
+        item.el.style.visibility = fadeOut > 0.01 ? 'visible' : 'hidden';
         item.el.style.pointerEvents = 'none';
       } else {
-        item.el.style.opacity = '1';
-        const dist = Math.abs(distBehind);
-        item.el.style.pointerEvents = dist < 2000 ? 'auto' : 'none';
+        // Object is in front of the camera (upcoming)
+        const distAhead = -distBehind;
+        const maxDist = 3200; // Do not show objects until camera is within this distance
+        const minDist = 1800; // Full opacity when camera is this close
+        
+        if (distAhead > maxDist) {
+          // Too far ahead -> completely hidden to prevent visual clutter/glitches
+          item.el.style.opacity = '0';
+          item.el.style.visibility = 'hidden';
+          item.el.style.pointerEvents = 'none';
+        } else if (distAhead > minDist) {
+          // Approaching -> smoothly fade in
+          const fadeIn = (maxDist - distAhead) / (maxDist - minDist);
+          item.el.style.opacity = fadeIn.toFixed(3);
+          item.el.style.visibility = 'visible';
+          item.el.style.pointerEvents = 'none';
+        } else {
+          // In focus range -> fully visible
+          item.el.style.opacity = '1';
+          item.el.style.visibility = 'visible';
+          item.el.style.pointerEvents = distAhead < 1500 ? 'auto' : 'none';
+        }
       }
     });
 
