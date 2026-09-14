@@ -122,8 +122,8 @@
   function renderLoop() {
     if (lenisInstance) lenisInstance.raf(Date.now());
 
-    // Smooth, cinematic camera deceleration (slower and softer zoom)
-    currentProgress += (targetProgress - currentProgress) * 0.045;
+    // Smooth, cinematic camera deceleration (slower, softer, deliberate pacing)
+    currentProgress += (targetProgress - currentProgress) * 0.035;
 
     const targetCamX = mouseX * 300;
     const targetCamY = mouseY * 300;
@@ -137,6 +137,12 @@
     camera.position.x = currentCamX;
     camera.position.y = currentCamY;
     camera.position.z = camZ;
+
+    // Update HUD vertical progress bar
+    const progressFill = document.getElementById('progress-fill');
+    if (progressFill) {
+      progressFill.style.height = `${(currentProgress * 100).toFixed(1)}%`;
+    }
 
     // Update active section HUD label based on compact depth
     let currentSection = "INTRO";
@@ -165,7 +171,7 @@
         snakeText.setAttribute('startOffset', `${slither}%`);
       }
 
-      if (distToRing > 550) {
+      if (distToRing > 380) {
         // Approaching & Reading Zone: Snake stays centered right in front of camera so name is large & readable
         const hover = (Date.now() * 0.001);
         ringObj.obj.position.x = Math.sin(hover) * 35;
@@ -175,7 +181,7 @@
         ringObj.obj.rotation.z = currentProgress * 2.0;
       } else {
         // Exit phase: as camera zooms past it, the snake uncoils and slithers diagonally out of the screen
-        const exitFactor = Math.max(0, (550 - distToRing) / 550);
+        const exitFactor = Math.max(0, (380 - distToRing) / 380);
         ringObj.obj.position.x = exitFactor * 900;
         ringObj.obj.position.y = -(exitFactor * 650);
         ringObj.obj.rotation.x = (48 + exitFactor * 25) * Math.PI / 180;
@@ -188,31 +194,31 @@
       // Distance from camera to object along Z (positive = object is in front of camera)
       const dist = camera.position.z - item.obj.position.z;
       
-      if (dist <= 250 && item.config.id !== 'layer-contact') {
-        // Safe near-plane culling: element is too close or behind camera -> strictly hidden to prevent 100x magnification glitch
+      if (dist <= 160 && item.config.id !== 'layer-contact') {
+        // Safe near-plane culling: element is too close or behind camera -> strictly hidden
         item.el.style.opacity = '0';
         item.el.style.filter = 'none';
         item.el.style.visibility = 'hidden';
         item.el.style.pointerEvents = 'none';
-      } else if (dist < 700 && item.config.id !== 'layer-contact') {
-        // Exiting smoothly past camera -> clean fade out from dist=700 down to dist=250 (zero blur near lens)
-        const exitAlpha = Math.max(0, (dist - 250) / 450);
+      } else if (dist < 460 && item.config.id !== 'layer-contact') {
+        // Exiting smoothly past camera -> gentle fade out from dist=460 down to dist=160
+        const exitAlpha = Math.max(0, (dist - 160) / 300);
         item.el.style.opacity = exitAlpha.toFixed(2);
         item.el.style.filter = 'none';
         item.el.style.visibility = exitAlpha > 0.02 ? 'visible' : 'hidden';
         item.el.style.pointerEvents = 'none';
-      } else if (dist <= 1800 || (item.config.id === 'layer-contact' && dist <= 2400)) {
-        // In-focus reading zone -> 100% crisp, zero blur overhead
+      } else if (dist <= 2600 || (item.config.id === 'layer-contact' && dist <= 3200)) {
+        // Wide in-focus reading zone -> 100% crisp, content stays readable for a long time
         item.el.style.opacity = '1';
         item.el.style.filter = 'none';
         item.el.style.visibility = 'visible';
-        item.el.style.pointerEvents = dist < 1400 ? 'auto' : 'none';
-      } else if (dist <= 5500) {
+        item.el.style.pointerEvents = dist < 1800 ? 'auto' : 'none';
+      } else if (dist <= 6200) {
         // Approaching in distance -> smooth depth-of-field transition (starts blurred, clarifies slowly)
-        const approachProgress = (5500 - dist) / (5500 - 1800);
-        const opacity = Math.pow(approachProgress, 1.25);
+        const approachProgress = (6200 - dist) / (6200 - 2600);
+        const opacity = Math.pow(approachProgress, 1.2);
         // Integer blur to prevent GPU subpixel shader recompiles
-        const blurPx = Math.round((1 - approachProgress) * 8);
+        const blurPx = Math.round((1 - approachProgress) * 7);
         
         item.el.style.opacity = opacity.toFixed(2);
         item.el.style.filter = blurPx > 1 ? `blur(${blurPx}px)` : 'none';
@@ -237,13 +243,13 @@
     if (typeof Lenis !== 'undefined') {
       try {
         lenisInstance = new Lenis({
-          duration: 1.6,
+          duration: 1.8,
           easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
           orientation: 'vertical',
           gestureOrientation: 'vertical',
           smoothWheel: true,
-          wheelMultiplier: 0.75,
-          touchMultiplier: 1.2,
+          wheelMultiplier: 0.38,
+          touchMultiplier: 0.65,
           autoResize: true,
           infinite: false
         });
