@@ -8,7 +8,6 @@
 
   let scene, camera, cssRenderer, webglRenderer;
   let starMesh;
-  let nebulaUniforms;
   let debrisArray = [];
   const objects = [];
 
@@ -75,48 +74,6 @@
     });
     starMesh = new THREE.Points(starGeo, starMat);
     scene.add(starMesh);
-
-    // Nebula / Black Hole Shader Background
-    nebulaUniforms = {
-      u_time: { value: 0.0 },
-      u_mouse: { value: new THREE.Vector2(0.5, 0.5) }
-    };
-
-    const nebulaGeo = new THREE.PlaneGeometry(80000, 80000);
-    const nebulaMat = new THREE.ShaderMaterial({
-      uniforms: nebulaUniforms,
-      vertexShader: `
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform float u_time;
-        uniform vec2 u_mouse;
-        varying vec2 vUv;
-        void main() {
-          vec2 pos = vUv - u_mouse;
-          float r = length(pos) * 2.0;
-          float a = atan(pos.y, pos.x);
-          
-          float f = cos(a * 8.0 + u_time * 1.5 - r * 12.0);
-          float blackHole = smoothstep(0.02, 0.1, r);
-          
-          vec3 color = vec3(0.01, 0.03, 0.08) / (r + 0.1);
-          color += vec3(0.0, 0.4, 0.8) * (f * 0.1) / (r + 0.2);
-          
-          color *= blackHole;
-          gl_FragColor = vec4(color, 1.0);
-        }
-      `,
-      depthWrite: false,
-      transparent: true
-    });
-    const nebulaMesh = new THREE.Mesh(nebulaGeo, nebulaMat);
-    nebulaMesh.position.z = -38000;
-    scene.add(nebulaMesh);
 
     // Floating 3D Geometric Debris
     const icosaGeo = new THREE.IcosahedronGeometry(1, 0);
@@ -224,10 +181,7 @@
     checkMinigameTrigger();
 
     if (nebulaUniforms) {
-      nebulaUniforms.u_time.value += 0.01;
-      // Smoothly move black hole center toward mouse
-      nebulaUniforms.u_mouse.value.x += (mouseX * 0.5 + 0.5 - nebulaUniforms.u_mouse.value.x) * 0.05;
-      nebulaUniforms.u_mouse.value.y += (mouseY * 0.5 + 0.5 - nebulaUniforms.u_mouse.value.y) * 0.05;
+      // Removed nebula logic
     }
 
     debrisArray.forEach(mesh => {
