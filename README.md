@@ -1,6 +1,6 @@
 # Scroll-Driven Canvas Portfolio
 
-A modern portfolio website featuring a 60fps canvas image sequence scroll animation powered by 66 cinematic frames in `ezgif-split/`.
+A modern portfolio website featuring a 3D spatial fly-through scroll animation powered by native Three.js WebGL and CSS3DRenderer.
 
 ## 🚀 Getting Started
 
@@ -33,12 +33,11 @@ Then visit `http://localhost:3000` in your browser.
 
 - **`index.html`**: Semantic layout containing the sticky canvas sequence container, milestone text cards, and portfolio sections (About, Projects, Skills, Contact).
 - **`style.css`**: Modern dark glassmorphism styling, ambient glow blends, custom scrollbars, and responsive typography.
-- **`script.js`**: Canvas controller featuring:
-  - Asset preloader with progress tracking
-  - High-DPI (`devicePixelRatio`) responsive canvas resizing
-  - `requestAnimationFrame` linear interpolation (lerp) loop for fluid scroll scrubbing
-  - Timed narrative text overlay transitions
-- **`ezgif-split/`**: 66 PNG image sequence frames (`frame_000` to `frame_065`).
+- **`script.js`**: 3D spatial engine featuring:
+  - Three.js WebGLRenderer for the 12,000-particle starfield
+  - CSS3DRenderer for rendering DOM elements in true 3D perspective
+  - Spring-physics (lerp) camera panning based on mouse position
+  - Scroll-driven Z-axis camera movement for a seamless fly-through effect
 
 ---
 
