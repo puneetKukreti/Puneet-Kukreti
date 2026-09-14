@@ -287,7 +287,7 @@ body {
    ========================================================================== */
 .sequence-section {
   position: relative;
-  height: 900vh;
+  height: 1350vh;
   background-color: var(--paper);
 }
 
@@ -557,8 +557,8 @@ body {
    Layer 1: 3D Orbiting Ring (Floating in Deep Space)
    ========================================================================== */
 .orbit-disc {
-  width: 780px;
-  height: 780px;
+  width: min(1350px, 92vw);
+  height: min(850px, 75vh);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -574,11 +574,11 @@ body {
 .orbit-text {
   fill: var(--ink);
   font-family: var(--display);
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  opacity: 0.65;
+  opacity: 0.9;
 }
 
 /* ==========================================================================

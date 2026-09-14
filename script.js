@@ -74,12 +74,12 @@
 
     const layerConfigs = [
       { id: 'layer-hero', z: 1000 },
-      { id: 'layer-ring', z: -4400 },
-      { id: 'layer-pitch', z: -8900 },
-      { id: 'layer-decade', z: -14000 },
-      { id: 'layer-numbers', z: -19100 },
-      { id: 'layer-cases', z: -23900 },
-      { id: 'layer-contact', z: -28100 }
+      { id: 'layer-ring', z: -1800 },
+      { id: 'layer-pitch', z: -6200 },
+      { id: 'layer-decade', z: -11000 },
+      { id: 'layer-numbers', z: -15800 },
+      { id: 'layer-cases', z: -20400 },
+      { id: 'layer-contact', z: -24600 }
     ];
 
     layerConfigs.forEach(config => {
@@ -122,7 +122,8 @@
   function renderLoop() {
     if (lenisInstance) lenisInstance.raf(Date.now());
 
-    currentProgress += (targetProgress - currentProgress) * 0.08;
+    // Smooth, cinematic camera deceleration (slower and softer zoom)
+    currentProgress += (targetProgress - currentProgress) * 0.045;
 
     const targetCamX = mouseX * 300;
     const targetCamY = mouseY * 300;
@@ -130,31 +131,49 @@
     currentCamY += (targetCamY - currentCamY) * 0.05;
 
     const startZ = 2000;
-    const endZ = -28000;
+    const endZ = -24500;
     const camZ = startZ + currentProgress * (endZ - startZ);
 
     camera.position.x = currentCamX;
     camera.position.y = currentCamY;
     camera.position.z = camZ;
 
-    // Update active section HUD label based on camera depth
+    // Update active section HUD label based on compact depth
     let currentSection = "INTRO";
-    if (camZ < -26000) currentSection = "CONTACT";
-    else if (camZ < -21500) currentSection = "HIGHLIGHTS";
-    else if (camZ < -16500) currentSection = "METRICS";
-    else if (camZ < -11500) currentSection = "EXPERIENCE";
-    else if (camZ < -6500) currentSection = "BIO";
+    if (camZ < -22500) currentSection = "CONTACT";
+    else if (camZ < -18100) currentSection = "HIGHLIGHTS";
+    else if (camZ < -13400) currentSection = "METRICS";
+    else if (camZ < -8600) currentSection = "EXPERIENCE";
+    else if (camZ < -4000) currentSection = "BIO";
 
     const sectionLabel = document.getElementById('section-name');
     if (sectionLabel && sectionLabel.textContent !== currentSection) {
       sectionLabel.textContent = currentSection;
     }
 
+    // Dynamic Cosmic Snake Animation (slithering text & uncoiling out of screen)
     const ringObj = objects.find(o => o.config.id === 'layer-ring');
+    const snakeText = document.getElementById('snake-text-path');
+
     if (ringObj) {
-      ringObj.obj.rotation.x = 65 * Math.PI / 180;
-      ringObj.obj.rotation.y = 15 * Math.PI / 180;
-      ringObj.obj.rotation.z = currentProgress * 8;
+      // Approach phase from camZ = 1200 down to -2800
+      const ringActive = Math.max(0, Math.min(1, (1200 - camZ) / 3800));
+
+      // Continuous slithering text along the snake curve (flows forward like living scales)
+      if (snakeText) {
+        const slither = (currentProgress * 380 + (Date.now() * 0.016)) % 100;
+        snakeText.setAttribute('startOffset', `${slither}%`);
+      }
+
+      // Slithering 3D motion: the snake undulates in S-waves and slithers diagonally out of the screen
+      const snakePhase = ringActive * Math.PI * 2.2;
+      ringObj.obj.position.x = Math.sin(snakePhase) * 550 + (ringActive * 1200);
+      ringObj.obj.position.y = Math.cos(snakePhase) * 320 - (ringActive * 850);
+      
+      // Serpentine 3D body rotation
+      ringObj.obj.rotation.x = (55 + Math.sin(snakePhase) * 22) * Math.PI / 180;
+      ringObj.obj.rotation.y = (20 + Math.cos(snakePhase) * 25) * Math.PI / 180;
+      ringObj.obj.rotation.z = (currentProgress * 7) + (Math.sin(snakePhase) * 0.5);
     }
     
     objects.forEach(item => {
@@ -210,13 +229,13 @@
     if (typeof Lenis !== 'undefined') {
       try {
         lenisInstance = new Lenis({
-          duration: 1.2,
+          duration: 1.6,
           easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
           orientation: 'vertical',
           gestureOrientation: 'vertical',
           smoothWheel: true,
-          wheelMultiplier: 1.0,
-          touchMultiplier: 1.5,
+          wheelMultiplier: 0.75,
+          touchMultiplier: 1.2,
           autoResize: true,
           infinite: false
         });
