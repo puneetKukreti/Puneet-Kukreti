@@ -880,7 +880,7 @@
   }
 
   function checkMinigameTrigger() {
-    if (targetProgress > 0.98 && !minigameActive && minigameTimer < 10) {
+    if (targetProgress > 0.98 && !minigameActive && minigameTimer === 0) {
       minigameActive = true;
       document.getElementById('minigame-canvas').classList.add('active');
       
@@ -890,6 +890,16 @@
         minigameTimer = 10;
         document.getElementById('game-over-text').style.opacity = '1';
         document.getElementById('minigame-canvas').classList.remove('active');
+        
+        // Hide text after 2 seconds, and reset timer to allow playing again
+        setTimeout(() => {
+          document.getElementById('game-over-text').style.opacity = '0';
+          // Reset after another second to let the fade finish
+          setTimeout(() => {
+            minigameTimer = 0;
+          }, 1000);
+        }, 2000);
+
       }, 10000);
     }
   }
