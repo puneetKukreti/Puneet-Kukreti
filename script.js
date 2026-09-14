@@ -8,6 +8,8 @@
 
   let scene, camera, cssRenderer, webglRenderer;
   let starMesh;
+  let nebulaUniforms;
+  let debrisArray = [];
   const objects = [];
 
   let mouseX = 0;
@@ -73,6 +75,78 @@
     });
     starMesh = new THREE.Points(starGeo, starMat);
     scene.add(starMesh);
+
+    // Nebula / Black Hole Shader Background
+    nebulaUniforms = {
+      u_time: { value: 0.0 },
+      u_mouse: { value: new THREE.Vector2(0.5, 0.5) }
+    };
+
+    const nebulaGeo = new THREE.PlaneGeometry(80000, 80000);
+    const nebulaMat = new THREE.ShaderMaterial({
+      uniforms: nebulaUniforms,
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float u_time;
+        uniform vec2 u_mouse;
+        varying vec2 vUv;
+        void main() {
+          vec2 pos = vUv - u_mouse;
+          float r = length(pos) * 2.0;
+          float a = atan(pos.y, pos.x);
+          
+          float f = cos(a * 8.0 + u_time * 1.5 - r * 12.0);
+          float blackHole = smoothstep(0.02, 0.1, r);
+          
+          vec3 color = vec3(0.01, 0.03, 0.08) / (r + 0.1);
+          color += vec3(0.0, 0.4, 0.8) * (f * 0.1) / (r + 0.2);
+          
+          color *= blackHole;
+          gl_FragColor = vec4(color, 1.0);
+        }
+      `,
+      depthWrite: false,
+      transparent: true
+    });
+    const nebulaMesh = new THREE.Mesh(nebulaGeo, nebulaMat);
+    nebulaMesh.position.z = -38000;
+    scene.add(nebulaMesh);
+
+    // Floating 3D Geometric Debris
+    const icosaGeo = new THREE.IcosahedronGeometry(1, 0);
+    const torusGeo = new THREE.TorusGeometry(1, 0.3, 8, 16);
+    const debrisMat1 = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.3 });
+    const debrisMat2 = new THREE.MeshBasicMaterial({ color: 0xffe052, wireframe: true, transparent: true, opacity: 0.2 });
+
+    for (let i = 0; i < 60; i++) {
+      const isTorus = Math.random() > 0.5;
+      const mesh = new THREE.Mesh(isTorus ? torusGeo : icosaGeo, Math.random() > 0.5 ? debrisMat1 : debrisMat2);
+      
+      const scale = 150 + Math.random() * 300;
+      mesh.scale.set(scale, scale, scale);
+      
+      mesh.position.x = (Math.random() - 0.5) * 12000;
+      mesh.position.y = (Math.random() - 0.5) * 8000;
+      mesh.position.z = 2000 - Math.random() * 37000;
+      
+      mesh.rotation.x = Math.random() * Math.PI;
+      mesh.rotation.y = Math.random() * Math.PI;
+      
+      // Random rotation speeds
+      mesh.userData = {
+        rx: (Math.random() - 0.5) * 0.02,
+        ry: (Math.random() - 0.5) * 0.02
+      };
+      
+      scene.add(mesh);
+      debrisArray.push(mesh);
+    }
 
     const layerConfigs = [
       { id: 'layer-hero', z: 1000 },
@@ -149,6 +223,18 @@
 
     checkMinigameTrigger();
 
+    if (nebulaUniforms) {
+      nebulaUniforms.u_time.value += 0.01;
+      // Smoothly move black hole center toward mouse
+      nebulaUniforms.u_mouse.value.x += (mouseX * 0.5 + 0.5 - nebulaUniforms.u_mouse.value.x) * 0.05;
+      nebulaUniforms.u_mouse.value.y += (mouseY * 0.5 + 0.5 - nebulaUniforms.u_mouse.value.y) * 0.05;
+    }
+
+    debrisArray.forEach(mesh => {
+      mesh.rotation.x += mesh.userData.rx;
+      mesh.rotation.y += mesh.userData.ry;
+    });
+
     const startZ = 2000;
     const endZ = -24500;
 
@@ -169,6 +255,25 @@
     camera.position.x = currentCamX;
     camera.position.y = currentCamY;
     camera.position.z = camZ;
+
+    // Cinematic Depth of Field (Focus/Blur)
+    objects.forEach(item => {
+      // Calculate absolute distance from camera to layer
+      // If item is behind the camera (camZ < item.config.z), it naturally goes out of view, but we'll blur it as we pass through
+      const dist = item.config.z - camZ;
+      let blur = 0;
+      
+      // Far away (in the distance)
+      if (dist < -1800) {
+        blur = Math.min(10, (Math.abs(dist) - 1800) * 0.002);
+      } 
+      // Close up (passing through it)
+      else if (dist > -600) {
+        blur = Math.min(20, (600 + dist) * 0.03); // The closer we get to 0 (and past it), the blurrier
+      }
+      
+      item.el.style.filter = `blur(${blur}px)`;
+    });
 
     // Update HUD vertical progress bar
     const progressFill = document.getElementById('progress-fill');
@@ -604,6 +709,67 @@
       el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
     });
   }
+  function initCometTrail() {
+    const canvas = document.getElementById('comet-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    window.addEventListener('resize', () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    });
+
+    const particles = [];
+    let lastX = 0;
+    let lastY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      
+      // Spawn particles based on distance moved (prevents clumping)
+      if (dist > 2) {
+        particles.push({
+          x: e.clientX,
+          y: e.clientY,
+          vx: (Math.random() - 0.5) * 2,
+          vy: (Math.random() - 0.5) * 2 + 1, // drift down slightly
+          life: 1.0,
+          size: Math.random() * 3 + 1
+        });
+        lastX = e.clientX;
+        lastY = e.clientY;
+      }
+    });
+
+    function renderComet() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.02;
+        
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+        } else {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(56, 189, 248, ${p.life * 0.8})`;
+          ctx.fill();
+        }
+      }
+      requestAnimationFrame(renderComet);
+    }
+    requestAnimationFrame(renderComet);
+  }
 
   function initConstellations() {
     const nodes = document.querySelectorAll('.skill-node');
@@ -904,6 +1070,36 @@
     }
   }
 
+  function initMagneticButtons() {
+    const magneticElements = document.querySelectorAll('.contact-resume-link, .tab-btn, .case-modal-close');
+    
+    magneticElements.forEach(el => {
+      // Add transition for smooth snap back
+      el.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        const distX = e.clientX - centerX;
+        const distY = e.clientY - centerY;
+        
+        // Remove transition while actively moving to prevent lag
+        el.style.transition = 'none';
+        
+        // Translate button towards cursor (magnetic pull)
+        el.style.transform = `translate(${distX * 0.3}px, ${distY * 0.3}px)`;
+      });
+      
+      el.addEventListener('mouseleave', () => {
+        // Restore transition for elastic snap back
+        el.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        el.style.transform = `translate(0px, 0px)`;
+      });
+    });
+  }
+
   function init() {
     initThree();
     initLenis();
@@ -911,9 +1107,11 @@
     initHorizontalTabs();
     initMobileTouchScroll();
     initCursor();
+    initCometTrail();
     initModals();
     initConstellations();
     initMinigame();
+    initMagneticButtons();
     
     if (lenisInstance) lenisInstance.stop();
 
