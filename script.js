@@ -157,28 +157,19 @@
       ringObj.obj.rotation.z = currentProgress * 8;
     }
     
-    // Parallax hero elements
-    const heroObj = objects.find(o => o.config.id === 'layer-hero');
-    if (heroObj && currentProgress < 0.2) {
-       const heroTextCol = document.getElementById('hero-text-col');
-       const heroPortraitCol = document.getElementById('hero-portrait-col');
-       if (heroTextCol) heroTextCol.style.transform = `translateX(${-currentProgress * 1000}px)`;
-       if (heroPortraitCol) heroPortraitCol.style.transform = `translateX(${currentProgress * 1000}px)`;
-    }
-
     objects.forEach(item => {
       // Distance from camera to object along Z (positive = object is in front of camera)
       const dist = camera.position.z - item.obj.position.z;
       
-      if (dist <= 0) {
-        // Object is at or behind camera -> strictly culled to prevent 3D perspective inversion/glitch/GPU freeze
+      if (dist <= 250 && item.config.id !== 'layer-contact') {
+        // Safe near-plane culling: element is too close or behind camera -> strictly hidden to prevent 100x magnification glitch
         item.el.style.opacity = '0';
         item.el.style.filter = 'none';
         item.el.style.visibility = 'hidden';
         item.el.style.pointerEvents = 'none';
-      } else if (dist < 450 && item.config.id !== 'layer-contact') {
-        // Exiting past camera -> smooth hardware-accelerated opacity fade out (no blur near lens to protect GPU)
-        const exitAlpha = Math.max(0, dist / 450);
+      } else if (dist < 700 && item.config.id !== 'layer-contact') {
+        // Exiting smoothly past camera -> clean fade out from dist=700 down to dist=250 (zero blur near lens)
+        const exitAlpha = Math.max(0, (dist - 250) / 450);
         item.el.style.opacity = exitAlpha.toFixed(2);
         item.el.style.filter = 'none';
         item.el.style.visibility = exitAlpha > 0.02 ? 'visible' : 'hidden';

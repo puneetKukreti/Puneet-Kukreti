@@ -403,7 +403,6 @@ body {
    ========================================================================== */
 .layer-hero {
   opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
 }
 
 .hero-container {
@@ -486,7 +485,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .portrait-container {
@@ -496,6 +497,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Animated Dashed Border */
