@@ -511,19 +511,221 @@
     }, { passive: true });
   }
 
+  // ==========================================
+  // Interactive UX Additions
+  // ==========================================
+
+  // 1. Web Audio API
+  let audioCtx = null;
+  let humOsc = null;
+  let humGain = null;
+  let isMuted = false;
+
+  function initAudio() {
+    if (audioCtx) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    
+    audioCtx = new AudioContext();
+    
+    // Ambient Space Hum
+    humOsc = audioCtx.createOscillator();
+    humOsc.type = 'sine';
+    humOsc.frequency.value = 55; // Low hum
+    
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 100;
+    
+    humGain = audioCtx.createGain();
+    humGain.gain.value = 0.15;
+    
+    humOsc.connect(filter);
+    filter.connect(humGain);
+    humGain.connect(audioCtx.destination);
+    
+    humOsc.start();
+    
+    // Setup Audio Toggle
+    const audioBtn = document.getElementById('audio-toggle');
+    if (audioBtn) {
+      audioBtn.addEventListener('click', () => {
+        isMuted = !isMuted;
+        if (isMuted) {
+          humGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+          audioBtn.classList.add('muted');
+        } else {
+          humGain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.5);
+          audioBtn.classList.remove('muted');
+          playBeep(600, 'sine');
+        }
+      });
+    }
+
+    // Bind UI hover sounds
+    const hoverElements = document.querySelectorAll('.planet-container, .tab-btn, .card-action-btn, a, button');
+    hoverElements.forEach(el => {
+      el.addEventListener('mouseenter', () => playBeep(800, 'sine', 0.05, 0.02));
+    });
+  }
+
+  function playBeep(freq, type = 'sine', duration = 0.1, vol = 0.1) {
+    if (!audioCtx || isMuted) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 0.5, audioCtx.currentTime + duration);
+    
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  }
+
+  // 2. Custom Cursor
+  function initCursor() {
+    const cursor = document.getElementById('custom-cursor');
+    if (!cursor) return;
+    
+    window.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    const hoverElements = document.querySelectorAll('a, button, .planet-container, .card-action-btn, .tab-btn, .achieve-card');
+    hoverElements.forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+    });
+  }
+
+  // 3. Boot Sequence
+  function runBootSequence(onComplete) {
+    const preloader = document.getElementById('preloader');
+    const bootText = document.getElementById('boot-text');
+    const bootBtn = document.getElementById('boot-start-btn');
+    if (!preloader || !bootText || !bootBtn) return onComplete();
+
+    const lines = [
+      "SYSTEM BOOT INITIATED...",
+      "LOADING KERNEL MODULES [OK]",
+      "MOUNTING VIRTUAL FILESYSTEM [OK]",
+      "INITIALIZING WEBGL 3D CONTEXT...",
+      "CSS3D RENDERER SYNCED.",
+      "STARFIELD GENERATION COMPLETE.",
+      "AWAITING USER INPUT..."
+    ];
+    let delay = 0;
+    
+    lines.forEach((line, index) => {
+      setTimeout(() => {
+        bootText.textContent += line + "\n";
+        if (index === lines.length - 1) {
+          bootBtn.style.display = 'inline-block';
+        }
+      }, delay);
+      delay += 300 + Math.random() * 400; // Typewriter delay
+    });
+
+    bootBtn.addEventListener('click', () => {
+      initAudio();
+      playBeep(800, 'square', 0.2, 0.2);
+      preloader.classList.add('fade-out');
+      onComplete();
+    });
+  }
+
+  // 4. Modals
+  const caseStudies = {
+    'case-1': {
+      title: 'AI Shipment Tracking',
+      meta: '01 / AUTOMATION',
+      tags: ['AI Agent', 'Python', 'LLM', 'Logistics'],
+      challenge: 'The client was manually reading hundreds of emails per day to track cargo container statuses, matching them to an internal tracking sheet. It was highly error-prone and consumed hours of manual labor.',
+      solution: 'I developed an autonomous Python-based AI agent that securely monitors the inbox, extracts structured logistics data using a specialized LLM pipeline, and automatically updates the live status tracking sheet via the Google Sheets API.',
+      impact: 'Reduced manual processing time by 95% and completely eliminated data-entry errors. The system now seamlessly handles 500+ emails daily, allowing the operations team to focus on exception handling.'
+    },
+    'case-2': {
+      title: 'Inventory Forecasting Engine',
+      meta: '02 / DATA PIPELINE',
+      tags: ['Data Science', 'SQL', 'Predictive Modeling'],
+      challenge: 'A retail client experienced frequent stockouts and overstock scenarios because they relied on static, backward-looking Excel spreadsheets for inventory purchasing.',
+      solution: 'I built an automated data pipeline that pulled historical sales data, applied a seasonal forecasting algorithm, and generated dynamic reorder points for every SKU in their warehouse.',
+      impact: 'Decreased stockouts by 40% and improved capital efficiency by reducing dead stock by 18% within the first two quarters of deployment.'
+    },
+    'case-3': {
+      title: 'Automated Billing Portal',
+      meta: '03 / WEB SYSTEM',
+      tags: ['Full Stack', 'Stripe API', 'React'],
+      challenge: 'The client’s accounting team was manually generating PDF invoices and chasing down unpaid accounts at the end of every month, causing severe cash flow delays.',
+      solution: 'I engineered a secure, client-facing billing portal integrated directly with Stripe. The system automatically triggers invoices upon project completion and sends scheduled payment reminders.',
+      impact: 'Accelerated average payment collection time from 28 days to 4 days and saved the accounting team over 20 hours per month in administrative work.'
+    }
+  };
+
+  function initModals() {
+    const modal = document.getElementById('case-modal');
+    const closeBtn = document.getElementById('case-modal-close');
+    const cards = document.querySelectorAll('.achieve-card');
+    
+    if (!modal || !closeBtn) return;
+
+    cards.forEach((card, index) => {
+      // Make the whole card clickable, not just the button
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', (e) => {
+        // Prevent default if they click the actual link/button inside
+        e.preventDefault();
+        const caseId = 'case-' + (index + 1);
+        const data = caseStudies[caseId] || caseStudies['case-1'];
+        
+        document.getElementById('case-title').textContent = data.title;
+        document.getElementById('case-meta').textContent = data.meta;
+        document.getElementById('case-challenge').textContent = data.challenge;
+        document.getElementById('case-solution').textContent = data.solution;
+        document.getElementById('case-impact').textContent = data.impact;
+        
+        const tagsDiv = document.getElementById('case-tags');
+        tagsDiv.innerHTML = '';
+        data.tags.forEach(tag => {
+          const span = document.createElement('span');
+          span.className = 'tag-pill';
+          span.textContent = tag;
+          tagsDiv.appendChild(span);
+        });
+        
+        modal.classList.remove('hidden');
+        if (lenisInstance) lenisInstance.stop();
+        playBeep(1200, 'triangle', 0.15, 0.1);
+      });
+    });
+
+    closeBtn.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      if (lenisInstance) lenisInstance.start();
+      playBeep(400, 'triangle', 0.15, 0.1);
+    });
+  }
+
   function init() {
     initThree();
     initLenis();
     updateScrollTarget();
     initHorizontalTabs();
     initMobileTouchScroll();
+    initCursor();
+    initModals();
     
-    setTimeout(() => {
-      const p = document.getElementById('preloader');
-      if (p) p.classList.add('fade-out');
-    }, 200);
+    if (lenisInstance) lenisInstance.stop();
 
-    requestAnimationFrame(renderLoop);
+    runBootSequence(() => {
+      if (lenisInstance) lenisInstance.start();
+      requestAnimationFrame(renderLoop);
+    });
   }
 
   if (document.readyState === 'loading') {
