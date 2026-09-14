@@ -259,10 +259,70 @@
     window.addEventListener('scroll', updateScrollTarget, { passive: true });
   }
 
+  function initHorizontalTabs() {
+    function setupTabGroup(tabContainerId, gridClass, itemClass) {
+      const tabContainer = document.getElementById(tabContainerId);
+      const grid = document.querySelector(`.${gridClass}`);
+      if (!tabContainer || !grid) return;
+
+      const tabs = tabContainer.querySelectorAll('.tab-btn');
+      const items = grid.querySelectorAll(`.${itemClass}`);
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', (e) => {
+          e.stopPropagation();
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          if (items[index]) {
+            const gridLeft = grid.getBoundingClientRect().left;
+            const itemLeft = items[index].getBoundingClientRect().left;
+            const scrollOffset = itemLeft - gridLeft + grid.scrollLeft - (grid.clientWidth - items[index].clientWidth) / 2;
+            grid.scrollTo({ left: scrollOffset, behavior: 'smooth' });
+          }
+        });
+      });
+
+      let scrollTimeout;
+      grid.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          let activeIndex = 0;
+          let minDiff = Infinity;
+          const gridCenter = grid.getBoundingClientRect().left + grid.clientWidth / 2;
+
+          items.forEach((item, index) => {
+            const itemCenter = item.getBoundingClientRect().left + item.clientWidth / 2;
+            const diff = Math.abs(gridCenter - itemCenter);
+            if (diff < minDiff) {
+              minDiff = diff;
+              activeIndex = index;
+            }
+          });
+
+          tabs.forEach((tab, index) => {
+            if (index === activeIndex) {
+              tab.classList.add('active');
+              try {
+                tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+              } catch(e) {}
+            } else {
+              tab.classList.remove('active');
+            }
+          });
+        }, 60);
+      }, { passive: true });
+    }
+
+    setupTabGroup('skills-tabs', 'skills-grid', 'skill-node');
+    setupTabGroup('achieve-tabs', 'achieve-grid', 'achieve-card');
+  }
+
   function init() {
     initThree();
     initLenis();
     updateScrollTarget();
+    initHorizontalTabs();
     
     setTimeout(() => {
       const p = document.getElementById('preloader');

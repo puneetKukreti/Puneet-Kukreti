@@ -1192,29 +1192,87 @@ body {
   white-space: nowrap;
 }
 
+/* Tab Navigation Bars (Desktop hidden by default) */
+.skills-tabs,
+.achieve-tabs {
+  display: none;
+}
+
 @media (max-width: 860px) {
   .skills-orbit-svg {
     display: none;
   }
-  .skills-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+  
+  /* Mobile Tabular Tab Strip */
+  .skills-tabs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    max-width: 100%;
+    padding: 6px 12px 14px 12px;
+    margin-bottom: 14px;
+    scrollbar-width: none;
+    pointer-events: auto;
+    justify-content: flex-start;
   }
-  .skill-node {
-    transform: none !important;
+  .skills-tabs::-webkit-scrollbar {
+    display: none;
   }
-}
 
-@media (max-width: 580px) {
-  .skills-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  .skills-subtitle {
-    margin-bottom: 36px;
-  }
   .skills-constellation {
-    margin-bottom: 40px;
+    width: 100%;
+    max-width: 100vw;
+    margin-bottom: 24px;
+  }
+
+  /* Horizontal Tabular Swipeable Row */
+  .skills-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 16px !important;
+    padding: 10px 16px 20px 16px !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    pointer-events: auto !important;
+    touch-action: pan-x !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  }
+
+  .skills-grid::-webkit-scrollbar {
+    height: 4px;
+  }
+  .skills-grid::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .skills-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
+  }
+
+  .skill-node {
+    flex: 0 0 76vw !important;
+    max-width: 270px !important;
+    scroll-snap-align: center !important;
+    background: rgba(14, 18, 26, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 20px !important;
+    padding: 24px 16px !important;
+    transform: none !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  .skills-subtitle {
+    margin-bottom: 24px !important;
   }
 }
 
@@ -1501,19 +1559,128 @@ body {
   background: rgba(255, 255, 255, 0.45);
 }
 
-@media (max-width: 960px) {
+@media (max-width: 860px) {
+  .achieve-container {
+    width: 100% !important;
+    max-width: 100vw !important;
+    padding: 0 12px !important;
+  }
+
   .achieve-header-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+    padding: 0 8px !important;
   }
+
+  .achieve-heading {
+    font-size: clamp(22px, 5.5vw, 32px) !important;
+    line-height: 1.2 !important;
+  }
+
+  .achieve-desc {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Mobile Tabular Tab Strip */
+  .achieve-tabs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    max-width: 100%;
+    padding: 4px 8px 14px 8px;
+    margin-bottom: 14px;
+    scrollbar-width: none;
+    pointer-events: auto;
+    justify-content: flex-start;
+  }
+  .achieve-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Horizontal Tabular Swipeable Row */
   .achieve-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 16px !important;
+    padding: 6px 12px 22px 12px !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    pointer-events: auto !important;
+    touch-action: pan-x !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
   }
+
+  .achieve-grid::-webkit-scrollbar {
+    height: 4px;
+  }
+  .achieve-grid::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .achieve-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
+  }
+
+  .achieve-card {
+    flex: 0 0 82vw !important;
+    max-width: 325px !important;
+    scroll-snap-align: center !important;
+    padding: 22px 18px !important;
+    transform: none !important;
+  }
+
+  .card-title {
+    font-size: 18px !important;
+  }
+
   .card-description {
-    margin-bottom: 18px;
+    font-size: 13.5px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 18px !important;
   }
+}
+
+/* Shared Tab Button Styles */
+.tab-btn {
+  flex: 0 0 auto;
+  padding: 7px 15px;
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.tab-btn:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.tab-btn.active {
+  color: #ffffff;
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
 }
 
 /* ==========================================================================
