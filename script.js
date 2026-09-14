@@ -74,12 +74,12 @@
 
     const layerConfigs = [
       { id: 'layer-hero', z: 1000 },
-      { id: 'layer-ring', z: -1800 },
-      { id: 'layer-pitch', z: -6200 },
-      { id: 'layer-decade', z: -11000 },
-      { id: 'layer-numbers', z: -15800 },
-      { id: 'layer-cases', z: -20400 },
-      { id: 'layer-contact', z: -24600 }
+      { id: 'layer-ring', z: -700 },
+      { id: 'layer-pitch', z: -5500 },
+      { id: 'layer-decade', z: -10500 },
+      { id: 'layer-numbers', z: -15500 },
+      { id: 'layer-cases', z: -20200 },
+      { id: 'layer-contact', z: -24500 }
     ];
 
     layerConfigs.forEach(config => {
@@ -140,40 +140,48 @@
 
     // Update active section HUD label based on compact depth
     let currentSection = "INTRO";
-    if (camZ < -22500) currentSection = "CONTACT";
-    else if (camZ < -18100) currentSection = "HIGHLIGHTS";
-    else if (camZ < -13400) currentSection = "METRICS";
-    else if (camZ < -8600) currentSection = "EXPERIENCE";
-    else if (camZ < -4000) currentSection = "BIO";
+    if (camZ < -22400) currentSection = "CONTACT";
+    else if (camZ < -17800) currentSection = "HIGHLIGHTS";
+    else if (camZ < -13000) currentSection = "METRICS";
+    else if (camZ < -8000) currentSection = "EXPERIENCE";
+    else if (camZ < -3200) currentSection = "BIO";
 
     const sectionLabel = document.getElementById('section-name');
     if (sectionLabel && sectionLabel.textContent !== currentSection) {
       sectionLabel.textContent = currentSection;
     }
 
-    // Dynamic Cosmic Snake Animation (slithering text & uncoiling out of screen)
+    // Dynamic Cosmic Snake Animation (centered, near, calm readable speed)
     const ringObj = objects.find(o => o.config.id === 'layer-ring');
     const snakeText = document.getElementById('snake-text-path');
 
     if (ringObj) {
-      // Approach phase from camZ = 1200 down to -2800
-      const ringActive = Math.max(0, Math.min(1, (1200 - camZ) / 3800));
+      // Distance from camera to snake (ring is at z = -700)
+      const distToRing = camZ - (-700);
 
-      // Continuous slithering text along the snake curve (flows forward like living scales)
+      // Slow, steady, calm slithering so user can easily read "PUNEET"
       if (snakeText) {
-        const slither = (currentProgress * 380 + (Date.now() * 0.016)) % 100;
+        const slither = (currentProgress * 45 + (Date.now() * 0.0035)) % 100;
         snakeText.setAttribute('startOffset', `${slither}%`);
       }
 
-      // Slithering 3D motion: the snake undulates in S-waves and slithers diagonally out of the screen
-      const snakePhase = ringActive * Math.PI * 2.2;
-      ringObj.obj.position.x = Math.sin(snakePhase) * 550 + (ringActive * 1200);
-      ringObj.obj.position.y = Math.cos(snakePhase) * 320 - (ringActive * 850);
-      
-      // Serpentine 3D body rotation
-      ringObj.obj.rotation.x = (55 + Math.sin(snakePhase) * 22) * Math.PI / 180;
-      ringObj.obj.rotation.y = (20 + Math.cos(snakePhase) * 25) * Math.PI / 180;
-      ringObj.obj.rotation.z = (currentProgress * 7) + (Math.sin(snakePhase) * 0.5);
+      if (distToRing > 550) {
+        // Approaching & Reading Zone: Snake stays centered right in front of camera so name is large & readable
+        const hover = (Date.now() * 0.001);
+        ringObj.obj.position.x = Math.sin(hover) * 35;
+        ringObj.obj.position.y = Math.cos(hover * 0.8) * 25;
+        ringObj.obj.rotation.x = (48 + Math.sin(hover * 0.7) * 4) * Math.PI / 180;
+        ringObj.obj.rotation.y = (10 + Math.cos(hover * 0.6) * 4) * Math.PI / 180;
+        ringObj.obj.rotation.z = currentProgress * 2.0;
+      } else {
+        // Exit phase: as camera zooms past it, the snake uncoils and slithers diagonally out of the screen
+        const exitFactor = Math.max(0, (550 - distToRing) / 550);
+        ringObj.obj.position.x = exitFactor * 900;
+        ringObj.obj.position.y = -(exitFactor * 650);
+        ringObj.obj.rotation.x = (48 + exitFactor * 25) * Math.PI / 180;
+        ringObj.obj.rotation.y = (10 + exitFactor * 30) * Math.PI / 180;
+        ringObj.obj.rotation.z = (currentProgress * 2.0) + (exitFactor * 1.5);
+      }
     }
     
     objects.forEach(item => {
