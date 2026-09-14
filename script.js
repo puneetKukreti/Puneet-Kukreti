@@ -605,7 +605,19 @@
 
   // 3. Boot Sequence
   function runBootSequence(onComplete) {
-    const preloader = document.getElementById('preloader');
+    let preloader = document.getElementById('preloader');
+    
+    // Cache-busting / robustness: if the preloader doesn't have the boot elements, create them!
+    if (preloader && !document.getElementById('boot-text')) {
+      preloader.innerHTML = `
+        <div class="boot-terminal">
+          <div id="boot-text" class="boot-text"></div>
+          <button id="boot-start-btn" class="boot-start-btn" style="display: none;">BOOT SYSTEM</button>
+        </div>
+      `;
+      preloader.className = 'preloader boot-sequence';
+    }
+
     const bootText = document.getElementById('boot-text');
     const bootBtn = document.getElementById('boot-start-btn');
     if (!preloader || !bootText || !bootBtn) return onComplete();
