@@ -288,7 +288,7 @@
           smoothWheel: true,
           syncTouch: true,
           wheelMultiplier: 0.38,
-          touchMultiplier: 0.85,
+          touchMultiplier: window.innerWidth <= 860 ? 1.5 : 0.85,
           autoResize: true,
           infinite: false
         });
@@ -472,12 +472,12 @@
           // Vertical swipe over cards -> drive page scroll
           const maxScroll = document.body.scrollHeight - window.innerHeight;
           const currentScroll = window.scrollY || window.pageYOffset;
-          const targetScroll = Math.max(0, Math.min(maxScroll, currentScroll + deltaY * 1.3));
+          const targetScroll = Math.max(0, Math.min(maxScroll, currentScroll + deltaY * 1.8));
 
           if (lenisInstance && typeof lenisInstance.scrollTo === 'function') {
             lenisInstance.scrollTo(targetScroll, { immediate: true });
           } else {
-            window.scrollBy(0, deltaY * 1.3);
+            window.scrollBy(0, deltaY * 1.8);
           }
           touchStartY = currentY;
           touchStartX = currentX;
@@ -487,12 +487,12 @@
         if (Math.abs(deltaY) > 3) {
           const maxScroll = document.body.scrollHeight - window.innerHeight;
           const currentScroll = window.scrollY || window.pageYOffset;
-          const targetScroll = Math.max(0, Math.min(maxScroll, currentScroll + deltaY * 1.25));
+          const targetScroll = Math.max(0, Math.min(maxScroll, currentScroll + deltaY * 1.8));
 
           if (lenisInstance && typeof lenisInstance.scrollTo === 'function') {
             lenisInstance.scrollTo(targetScroll, { immediate: true });
           } else {
-            window.scrollBy(0, deltaY * 1.25);
+            window.scrollBy(0, deltaY * 1.8);
           }
           touchStartY = currentY;
           touchStartX = currentX;

@@ -1848,6 +1848,10 @@ body {
    Responsive Breakpoints
    ========================================================================== */
 @media (max-width: 900px) {
+  .sequence-section {
+    height: 1000vh;
+  }
+
   .hero-container {
     grid-template-columns: 1fr;
     text-align: center;
