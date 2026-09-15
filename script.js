@@ -21,8 +21,8 @@
     // Dynamic FOV distance based on THREE.PerspectiveCamera(45) and CSS3DRenderer:
     // fovDist = (0.5 / tan(22.5 deg)) * innerHeight = 1.20710678 * innerHeight
     const fovDist = (0.5 / Math.tan((45 * Math.PI) / 360)) * window.innerHeight;
-    // Target an authoritative, perfectly-framed scale of ~1.08 on desktop, and ~0.94 on mobile
-    const targetScale = window.innerWidth <= 860 ? 0.94 : 1.08;
+    // Balanced framing: zoomed out a little for comfortable breathing room
+    const targetScale = window.innerWidth <= 860 ? 0.80 : 0.84;
     const heroZ = 1000;
     return heroZ + (fovDist / targetScale);
   }

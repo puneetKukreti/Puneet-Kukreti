@@ -465,9 +465,9 @@ body {
 .hero-container {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: clamp(32px, 5vw, 75px);
+  gap: clamp(28px, 4.5vw, 65px);
   align-items: center;
-  width: min(1180px, 88vw);
+  width: min(1060px, 86vw);
   margin: 0 auto;
 }
 
@@ -486,7 +486,7 @@ body {
 }
 
 .name-outline {
-  font-size: clamp(42px, 6vw, 88px);
+  font-size: clamp(38px, 5.4vw, 80px);
   font-weight: 900;
   letter-spacing: 0.05em;
   color: var(--ink);
@@ -494,7 +494,7 @@ body {
 }
 
 .name-solid {
-  font-size: clamp(42px, 6vw, 88px);
+  font-size: clamp(38px, 5.4vw, 80px);
   font-weight: 900;
   letter-spacing: 0.03em;
   color: var(--ink);
@@ -503,23 +503,23 @@ body {
 
 .hero-alias {
   font-family: var(--body);
-  font-size: clamp(16px, 1.4vw, 22px);
+  font-size: clamp(15px, 1.3vw, 20px);
   font-weight: 800;
   letter-spacing: 0.22em;
   color: #ffffff;
-  margin-top: 18px;
+  margin-top: 16px;
   text-transform: uppercase;
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
 }
 
 .hero-roles {
   list-style: none;
-  margin-top: 20px;
+  margin-top: 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 11px;
   font-family: var(--body);
-  font-size: clamp(16px, 1.5vw, 22px);
+  font-size: clamp(15px, 1.3vw, 20px);
   font-weight: 700;
   color: var(--ink);
 }
@@ -533,7 +533,7 @@ body {
 .hero-roles .bullet {
   color: #38bdf8;
   font-family: var(--display);
-  font-size: clamp(16px, 1.5vw, 22px);
+  font-size: clamp(15px, 1.3vw, 20px);
   font-weight: 900;
   width: 14px;
   text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
@@ -553,7 +553,7 @@ body {
 
 .portrait-container {
   position: relative;
-  width: clamp(155px, 14vw, 195px);
+  width: clamp(140px, 12.8vw, 178px);
   aspect-ratio: 0.82;
   display: flex;
   align-items: center;
