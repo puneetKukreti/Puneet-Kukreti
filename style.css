@@ -280,15 +280,17 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 11px;
+  font-size: 11.5px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--ink-dim);
 }
 
 .section-label b {
-  color: var(--ink);
-  font-weight: 500;
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
 }
 
 .section-label .chev {
@@ -448,11 +450,18 @@ body {
 
 .layer-meta {
   font-family: var(--body);
-  font-size: 11px;
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 800;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: var(--ink-dim);
+  color: #38bdf8;
   margin-bottom: 24px;
+}
+
+.layer-meta b {
+  font-weight: 800;
+  color: #38bdf8;
+  text-shadow: 0 0 14px rgba(56, 189, 248, 0.55);
 }
 
 /* ==========================================================================
@@ -865,11 +874,18 @@ body {
 
 .skills-meta {
   font-family: var(--body);
-  font-size: clamp(11px, 1vw, 13px);
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 800;
   letter-spacing: 0.35em;
-  color: var(--ink-dim);
+  color: #38bdf8;
   text-transform: uppercase;
   margin-bottom: 14px;
+}
+
+.skills-meta b {
+  font-weight: 800;
+  color: #38bdf8;
+  text-shadow: 0 0 14px rgba(56, 189, 248, 0.55);
 }
 
 .skills-heading {
@@ -1403,11 +1419,18 @@ body {
 
 .achieve-meta {
   font-family: var(--body);
-  font-size: 11px;
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 800;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: var(--ink-dim);
-  margin-bottom: 6px;
+  color: #38bdf8;
+  margin-bottom: 8px;
+}
+
+.achieve-meta b {
+  font-weight: 800;
+  color: #38bdf8;
+  text-shadow: 0 0 14px rgba(56, 189, 248, 0.55);
 }
 
 .achieve-heading {
