@@ -510,20 +510,35 @@ body {
   margin-top: 4px;
 }
 
-.hero-alias {
-  font-family: var(--body);
-  font-size: clamp(13px, 1.1vw, 16px);
-  font-weight: 800;
-  letter-spacing: 0.22em;
-  color: #38bdf8;
+.hero-identity-block {
+  display: flex;
+  flex-direction: column;
   margin-top: 14px;
+}
+
+.hero-role-title {
+  font-family: var(--display);
+  font-size: clamp(17px, 1.6vw, 22px);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #38bdf8;
   text-transform: uppercase;
-  text-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
+  text-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
+}
+
+.hero-specialization {
+  font-family: var(--body);
+  font-size: clamp(12px, 1.05vw, 14.5px);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: 4px;
+  text-transform: uppercase;
 }
 
 .hero-value-prop {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(14px, 1.15vw, 16.5px);
+  font-size: clamp(14px, 1.15vw, 16px);
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.85);
   margin-top: 14px;
@@ -1585,9 +1600,25 @@ body {
 }
 
 .achieve-card:hover {
-  transform: translateY(-8px);
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(56, 189, 248, 0.15);
+  transform: translateY(-6px);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(56, 189, 248, 0.2);
+}
+
+.achieve-card:hover .card-action-btn {
+  background: #38bdf8;
+  color: #020617;
+  border-color: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+  transform: scale(1.08);
+}
+
+.achieve-card .card-action-btn svg {
+  transition: transform 0.25s ease;
+}
+
+.achieve-card:hover .card-action-btn svg {
+  transform: translate(2px, -2px);
 }
 
 .card-top-bar {
@@ -1724,9 +1755,10 @@ body {
 }
 
 .card-action-btn:hover {
-  background: #ffffff;
-  color: #000000;
-  border-color: #ffffff;
+  background: #38bdf8;
+  color: #020617;
+  border-color: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
   transform: scale(1.1);
 }
 
@@ -2044,6 +2076,11 @@ body {
 
   .hero-text-col {
     align-items: center;
+  }
+
+  .hero-identity-block {
+    align-items: center;
+    text-align: center;
   }
 
   .hero-cta-group {

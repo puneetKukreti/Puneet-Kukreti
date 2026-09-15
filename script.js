@@ -781,33 +781,33 @@
   const caseStudies = {
     'case-1': {
       title: 'Bill of Entry Data Extraction',
-      meta: '01 / AUTOMATION & DATA EXTRACTION',
-      tags: ['Python', 'OpenPyXL / Pandas', 'Excel Automation', 'Logistics Operations'],
-      challenge: 'Import documentation workflows involved thousands of unstructured Bill of Entry forms across diverse shipment manifests. Manually transcribing customs tariff numbers, assessed duties, clearance timestamps, and container numbers into spreadsheets consumed months of repetitive human labor and introduced costly transcription error.',
-      approach: 'Mapped document structures and designed a programmatic extraction engine using Python. Extracted tabular and nested data fields, implemented automated schema validation, and structured output to align directly with corporate audit compliance standards.',
-      solution: 'Developed a robust Python automated extraction pipeline that parses raw customs documents in bulk, cleanses inconsistent entries, and outputs directly into structured, multi-tab Excel workbooks ready for immediate financial reconciliation.',
-      impact: 'Reduced data processing time from 6 months of tedious manual entry down to approximately 1 week. Delivered 100% data consistency across thousands of records, freeing operations staff for high-priority logistics tasks.',
-      tools: ['Python', 'OpenPyXL', 'Pandas', 'Microsoft Excel', 'Customs Data Schemas']
+      meta: '01 / AUTOMATION',
+      tags: ['Python', 'Excel', 'Data Extraction'],
+      challenge: 'Thousands of Bill of Entry records had to be manually processed and specific operational and duty information extracted into structured Excel data. Doing this manually was a repetitive, error-prone, months-long process.',
+      solution: 'Developed an automated Python extraction script to parse and extract Bill of Entry records directly into structured Excel data.',
+      workflow: 'The script parses document records, extracts key operational and duty fields, normalizes the data, and formats it cleanly into organized Excel spreadsheets.',
+      impact: 'Reduced a months-long manual process to approximately one week, eliminating repetitive manual transcription.',
+      tools: ['Python', 'Excel', 'Data Extraction', 'OpenPyXL / Pandas']
     },
     'case-2': {
       title: 'Automated Repetitive Workflows',
-      meta: '02 / WORKFLOW AUTOMATION',
-      tags: ['Python Automation', 'GST Reconciliation', 'Tally ERP', 'Excel Pipelines'],
-      challenge: 'Routine accounting and logistics operations required recurring manual handoffs between GST portal records, Tally ERP entries, and multiple operational Excel tracking sheets. Manually reconciling discrepancies between disparate systems consumed dozens of hours every month and caused reporting delays.',
-      approach: 'Conducted end-to-end workflow analysis across enterprise touchpoints to identify redundant data translation steps. Designed automated intermediate transformation logic to bridge ERP exports and regulatory tax spreadsheets.',
-      solution: 'Engineered unified Python automation scripts that ingest multi-source exports from Tally ERP and GST tax filings, automatically cross-reconcile line items, flag mismatched records, and populate synchronized Excel reporting dashboards with one click.',
-      impact: 'Replaced hours of repetitive manual data manipulation with continuous automated execution. Dramatically reduced cross-system discrepancies, accelerated month-end reconciliations, and ensured audit-ready reporting precision.',
-      tools: ['Python', 'Tally ERP', 'GST Tax Portal', 'Excel VBA / Advanced Formulas', 'Data Pipelines']
+      meta: '02 / WORKFLOW',
+      tags: ['Python', 'GST', 'Tally', 'Excel'],
+      challenge: 'Routine business operations involved repetitive manual data entry, reconciliation, and handoffs across GST filings, Tally ERP entries, and Excel tracking sheets.',
+      solution: 'Engineered automated Python workflows connecting GST, Tally, and Excel data to eliminate repetitive manual tasks and enable continuous execution.',
+      workflow: 'Automated scripts ingest and transform cross-platform data, validate entries between systems, and keep master Excel workbooks synchronized without manual intervention.',
+      impact: 'Transformed repetitive manual work into automated workflows that run continuously and reliably.',
+      tools: ['Python', 'GST', 'Tally', 'Excel']
     },
     'case-3': {
-      title: 'AI Shipment Tracking Agent',
-      meta: '03 / AI & AUTOMATION AGENT',
-      tags: ['AI Agent', 'Python', 'LangChain / LLM', 'Email Automation', 'Live Sheets'],
-      challenge: 'Logistics tracking required manually parsing hundreds of unstructured carrier emails, delay advisories, and freight arrival notifications every day. Operations staff had to read every message, extract shipment milestones, and manually update internal tracking sheets, causing visibility lag and high error rates.',
-      approach: 'Architected an automated multi-stage pipeline connecting an email monitoring listener to an LLM extraction chain with few-shot operational prompting and fallback parsing for non-standard freight statuses.',
-      solution: 'Built an autonomous AI agent in Python using LangChain and LLMs that monitors carrier communications, parses container numbers, carrier names, milestones, and ETAs, and automatically streams structured live updates directly into Google Sheets and operational dashboards.',
-      impact: 'Achieved an end-to-end automated workflow from incoming carrier email directly to live status dashboard. Eliminated manual data logging, provided real-time shipment milestone transparency, and saved the team hours of daily manual tracking.',
-      tools: ['Python', 'LangChain', 'OpenAI / Anthropic LLMs', 'Email APIs', 'Google Sheets API']
+      title: 'AI Shipment Tracking',
+      meta: '03 / AI AGENT',
+      tags: ['AI Agent', 'Email Automation', 'Live Sheets', 'Python'],
+      challenge: 'Shipment tracking required manually reading hundreds of carrier status emails and updating tracking sheets by hand, causing delays and operational friction.',
+      solution: 'Built an automated AI workflow that processes shipment emails, identifies the latest shipment status, and automatically updates the tracking sheet in real time.',
+      workflow: 'Incoming shipment emails are processed through an AI model that extracts cargo identifiers and current status milestones, then streams the live status directly into the tracking sheet.',
+      impact: 'Established a direct automated flow from EMAIL → AI → LIVE STATUS without manual tracking delays.',
+      tools: ['Python', 'AI Integration', 'Email Automation', 'Google Sheets']
     }
   };
 
@@ -827,15 +827,15 @@
       const titleEl = document.getElementById('case-title');
       const metaEl = document.getElementById('case-meta');
       const chalEl = document.getElementById('case-challenge');
-      const apprEl = document.getElementById('case-approach');
       const solEl = document.getElementById('case-solution');
+      const wfEl = document.getElementById('case-workflow');
       const impEl = document.getElementById('case-impact');
 
       if (titleEl) titleEl.textContent = data.title;
       if (metaEl) metaEl.textContent = data.meta;
       if (chalEl) chalEl.textContent = data.challenge;
-      if (apprEl) apprEl.textContent = data.approach;
       if (solEl) solEl.textContent = data.solution;
+      if (wfEl) wfEl.textContent = data.workflow;
       if (impEl) impEl.textContent = data.impact;
       
       const tagsDiv = document.getElementById('case-tags');
