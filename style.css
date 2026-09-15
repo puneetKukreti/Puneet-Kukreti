@@ -519,11 +519,13 @@ body {
 .hero-role-title {
   font-family: var(--display);
   font-size: clamp(17px, 1.6vw, 22px);
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.18em;
-  color: #38bdf8;
+  color: #040e1a; /* Very dark background-colored text for contrast */
+  background-color: #ffffff; /* Solid white box */
+  display: inline-block;
+  padding: 6px 14px;
   text-transform: uppercase;
-  text-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
 }
 
 .hero-specialization {
