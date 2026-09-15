@@ -472,11 +472,12 @@ body {
 }
 
 .hero-container {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: clamp(28px, 4.5vw, 65px);
+  display: flex;
+  justify-content: center;
   align-items: center;
-  width: min(1060px, 86vw);
+  gap: clamp(24px, 3.5vw, 46px);
+  width: auto;
+  max-width: 90vw;
   margin: 0 auto;
 }
 
@@ -1912,7 +1913,7 @@ body {
   }
 
   .hero-container {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     text-align: center;
     gap: 20px;
   }
