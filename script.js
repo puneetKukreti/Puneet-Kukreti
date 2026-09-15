@@ -777,42 +777,111 @@
   }
 
   // 4. Modals
+  // 4. Modals & Case Studies (Authentic Data)
   const caseStudies = {
     'case-1': {
-      title: 'AI Shipment Tracking',
-      meta: '01 / AUTOMATION',
-      tags: ['AI Agent', 'Python', 'LLM', 'Logistics'],
-      challenge: 'The client was manually reading hundreds of emails per day to track cargo container statuses, matching them to an internal tracking sheet. It was highly error-prone and consumed hours of manual labor.',
-      solution: 'I developed an autonomous Python-based AI agent that securely monitors the inbox, extracts structured logistics data using a specialized LLM pipeline, and automatically updates the live status tracking sheet via the Google Sheets API.',
-      impact: 'Reduced manual processing time by 95% and completely eliminated data-entry errors. The system now seamlessly handles 500+ emails daily, allowing the operations team to focus on exception handling.'
+      title: 'Bill of Entry Data Extraction',
+      meta: '01 / AUTOMATION & DATA EXTRACTION',
+      tags: ['Python', 'OpenPyXL / Pandas', 'Excel Automation', 'Logistics Operations'],
+      challenge: 'Import documentation workflows involved thousands of unstructured Bill of Entry forms across diverse shipment manifests. Manually transcribing customs tariff numbers, assessed duties, clearance timestamps, and container numbers into spreadsheets consumed months of repetitive human labor and introduced costly transcription error.',
+      approach: 'Mapped document structures and designed a programmatic extraction engine using Python. Extracted tabular and nested data fields, implemented automated schema validation, and structured output to align directly with corporate audit compliance standards.',
+      solution: 'Developed a robust Python automated extraction pipeline that parses raw customs documents in bulk, cleanses inconsistent entries, and outputs directly into structured, multi-tab Excel workbooks ready for immediate financial reconciliation.',
+      impact: 'Reduced data processing time from 6 months of tedious manual entry down to approximately 1 week. Delivered 100% data consistency across thousands of records, freeing operations staff for high-priority logistics tasks.',
+      tools: ['Python', 'OpenPyXL', 'Pandas', 'Microsoft Excel', 'Customs Data Schemas']
     },
     'case-2': {
-      title: 'Inventory Forecasting Engine',
-      meta: '02 / DATA PIPELINE',
-      tags: ['Data Science', 'SQL', 'Predictive Modeling'],
-      challenge: 'A retail client experienced frequent stockouts and overstock scenarios because they relied on static, backward-looking Excel spreadsheets for inventory purchasing.',
-      solution: 'I built an automated data pipeline that pulled historical sales data, applied a seasonal forecasting algorithm, and generated dynamic reorder points for every SKU in their warehouse.',
-      impact: 'Decreased stockouts by 40% and improved capital efficiency by reducing dead stock by 18% within the first two quarters of deployment.'
+      title: 'Automated Repetitive Workflows',
+      meta: '02 / WORKFLOW AUTOMATION',
+      tags: ['Python Automation', 'GST Reconciliation', 'Tally ERP', 'Excel Pipelines'],
+      challenge: 'Routine accounting and logistics operations required recurring manual handoffs between GST portal records, Tally ERP entries, and multiple operational Excel tracking sheets. Manually reconciling discrepancies between disparate systems consumed dozens of hours every month and caused reporting delays.',
+      approach: 'Conducted end-to-end workflow analysis across enterprise touchpoints to identify redundant data translation steps. Designed automated intermediate transformation logic to bridge ERP exports and regulatory tax spreadsheets.',
+      solution: 'Engineered unified Python automation scripts that ingest multi-source exports from Tally ERP and GST tax filings, automatically cross-reconcile line items, flag mismatched records, and populate synchronized Excel reporting dashboards with one click.',
+      impact: 'Replaced hours of repetitive manual data manipulation with continuous automated execution. Dramatically reduced cross-system discrepancies, accelerated month-end reconciliations, and ensured audit-ready reporting precision.',
+      tools: ['Python', 'Tally ERP', 'GST Tax Portal', 'Excel VBA / Advanced Formulas', 'Data Pipelines']
     },
     'case-3': {
-      title: 'Automated Billing Portal',
-      meta: '03 / WEB SYSTEM',
-      tags: ['Full Stack', 'Stripe API', 'React'],
-      challenge: 'The client’s accounting team was manually generating PDF invoices and chasing down unpaid accounts at the end of every month, causing severe cash flow delays.',
-      solution: 'I engineered a secure, client-facing billing portal integrated directly with Stripe. The system automatically triggers invoices upon project completion and sends scheduled payment reminders.',
-      impact: 'Accelerated average payment collection time from 28 days to 4 days and saved the accounting team over 20 hours per month in administrative work.'
+      title: 'AI Shipment Tracking Agent',
+      meta: '03 / AI & AUTOMATION AGENT',
+      tags: ['AI Agent', 'Python', 'LangChain / LLM', 'Email Automation', 'Live Sheets'],
+      challenge: 'Logistics tracking required manually parsing hundreds of unstructured carrier emails, delay advisories, and freight arrival notifications every day. Operations staff had to read every message, extract shipment milestones, and manually update internal tracking sheets, causing visibility lag and high error rates.',
+      approach: 'Architected an automated multi-stage pipeline connecting an email monitoring listener to an LLM extraction chain with few-shot operational prompting and fallback parsing for non-standard freight statuses.',
+      solution: 'Built an autonomous AI agent in Python using LangChain and LLMs that monitors carrier communications, parses container numbers, carrier names, milestones, and ETAs, and automatically streams structured live updates directly into Google Sheets and operational dashboards.',
+      impact: 'Achieved an end-to-end automated workflow from incoming carrier email directly to live status dashboard. Eliminated manual data logging, provided real-time shipment milestone transparency, and saved the team hours of daily manual tracking.',
+      tools: ['Python', 'LangChain', 'OpenAI / Anthropic LLMs', 'Email APIs', 'Google Sheets API']
     }
   };
 
   function initModals() {
     const modal = document.getElementById('case-modal');
     const closeBtn = document.getElementById('case-modal-close');
+    const backdrop = document.getElementById('case-modal-backdrop');
     const cards = document.querySelectorAll('.achieve-card');
+    let lastActiveCard = null;
     
     if (!modal || !closeBtn) return;
 
+    function openModal(caseId, triggerEl) {
+      const data = caseStudies[caseId] || caseStudies['case-1'];
+      lastActiveCard = triggerEl || null;
+      
+      const titleEl = document.getElementById('case-title');
+      const metaEl = document.getElementById('case-meta');
+      const chalEl = document.getElementById('case-challenge');
+      const apprEl = document.getElementById('case-approach');
+      const solEl = document.getElementById('case-solution');
+      const impEl = document.getElementById('case-impact');
+
+      if (titleEl) titleEl.textContent = data.title;
+      if (metaEl) metaEl.textContent = data.meta;
+      if (chalEl) chalEl.textContent = data.challenge;
+      if (apprEl) apprEl.textContent = data.approach;
+      if (solEl) solEl.textContent = data.solution;
+      if (impEl) impEl.textContent = data.impact;
+      
+      const tagsDiv = document.getElementById('case-tags');
+      if (tagsDiv) {
+        tagsDiv.innerHTML = '';
+        data.tags.forEach(tag => {
+          const span = document.createElement('span');
+          span.className = 'tag-pill';
+          span.textContent = tag;
+          tagsDiv.appendChild(span);
+        });
+      }
+
+      const toolsDiv = document.getElementById('case-tools');
+      if (toolsDiv && data.tools) {
+        toolsDiv.innerHTML = '';
+        data.tools.forEach(tool => {
+          const span = document.createElement('span');
+          span.className = 'case-tool-tag';
+          span.textContent = tool;
+          toolsDiv.appendChild(span);
+        });
+      }
+      
+      modal.classList.remove('hidden');
+      if (lenisInstance) lenisInstance.stop();
+      playBeep(1200, 'triangle', 0.15, 0.1);
+
+      // Focus close button for accessibility
+      setTimeout(() => {
+        closeBtn.focus();
+      }, 50);
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      if (lenisInstance) lenisInstance.start();
+      playBeep(400, 'triangle', 0.15, 0.1);
+
+      // Restore focus to the card that triggered the modal
+      if (lastActiveCard && typeof lastActiveCard.focus === 'function') {
+        lastActiveCard.focus();
+      }
+    }
+
     cards.forEach((card, index) => {
-      // Make the whole card clickable, not just the button
       card.style.cursor = 'pointer';
 
       // Holographic Tilt Effect
@@ -835,37 +904,58 @@
       card.addEventListener('mouseleave', () => {
         card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
       });
+
+      // Click event
       card.addEventListener('click', (e) => {
-        // Prevent default if they click the actual link/button inside
         e.preventDefault();
-        const caseId = 'case-' + (index + 1);
-        const data = caseStudies[caseId] || caseStudies['case-1'];
-        
-        document.getElementById('case-title').textContent = data.title;
-        document.getElementById('case-meta').textContent = data.meta;
-        document.getElementById('case-challenge').textContent = data.challenge;
-        document.getElementById('case-solution').textContent = data.solution;
-        document.getElementById('case-impact').textContent = data.impact;
-        
-        const tagsDiv = document.getElementById('case-tags');
-        tagsDiv.innerHTML = '';
-        data.tags.forEach(tag => {
-          const span = document.createElement('span');
-          span.className = 'tag-pill';
-          span.textContent = tag;
-          tagsDiv.appendChild(span);
-        });
-        
-        modal.classList.remove('hidden');
-        if (lenisInstance) lenisInstance.stop();
-        playBeep(1200, 'triangle', 0.15, 0.1);
+        const caseId = card.getAttribute('data-case') || ('case-' + (index + 1));
+        openModal(caseId, card);
+      });
+
+      // Keyboard accessibility (Enter / Space)
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const caseId = card.getAttribute('data-case') || ('case-' + (index + 1));
+          openModal(caseId, card);
+        }
       });
     });
 
-    closeBtn.addEventListener('click', () => {
-      modal.classList.add('hidden');
-      if (lenisInstance) lenisInstance.start();
-      playBeep(400, 'triangle', 0.15, 0.1);
+    closeBtn.addEventListener('click', closeModal);
+
+    if (backdrop) {
+      backdrop.addEventListener('click', closeModal);
+    }
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Escape key and Tab focus trapping
+    document.addEventListener('keydown', (e) => {
+      if (modal.classList.contains('hidden')) return;
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeModal();
+      } else if (e.key === 'Tab') {
+        const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (focusableElements.length === 0) return;
+
+        const firstEl = focusableElements[0];
+        const lastEl = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey && document.activeElement === firstEl) {
+          e.preventDefault();
+          lastEl.focus();
+        } else if (!e.shiftKey && document.activeElement === lastEl) {
+          e.preventDefault();
+          firstEl.focus();
+        }
+      }
     });
   }
 
@@ -1030,6 +1120,25 @@
     });
   }
 
+  function initHeroCTA() {
+    const heroCtaWork = document.getElementById('hero-cta-work');
+    if (!heroCtaWork) return;
+
+    heroCtaWork.addEventListener('click', (e) => {
+      e.preventDefault();
+      // Achievements layer is framed comfortably around targetProgress ≈ 0.80
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      const targetScrollY = maxScroll * 0.80;
+
+      if (lenisInstance) {
+        lenisInstance.scrollTo(targetScrollY, { duration: 2.0 });
+      } else {
+        window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
+      }
+      playBeep(900, 'sine', 0.12, 0.08);
+    });
+  }
+
   function init() {
     initThree();
     initLenis();
@@ -1039,6 +1148,7 @@
     initCursor();
     initCometTrail();
     initModals();
+    initHeroCTA();
     initConstellations();
     initMinigame();
     initMagneticButtons();
