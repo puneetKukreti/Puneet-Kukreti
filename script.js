@@ -160,6 +160,11 @@
     isMouseHovering = false;
   });
 
+  // Prevent mobile browser pinch-zoom from breaking 3D projection
+  document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
+  document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
+  document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
+
   function updateScrollTarget() {
     const scrollY = window.scrollY || window.pageYOffset;
     const maxScroll = document.body.scrollHeight - window.innerHeight;
@@ -201,25 +206,6 @@
     camera.position.x = currentCamX;
     camera.position.y = currentCamY;
     camera.position.z = camZ;
-
-    // Cinematic Depth of Field (Focus/Blur)
-    objects.forEach(item => {
-      // Calculate absolute distance from camera to layer
-      // If item is behind the camera (camZ < item.config.z), it naturally goes out of view, but we'll blur it as we pass through
-      const dist = item.config.z - camZ;
-      let blur = 0;
-      
-      // Far away (in the distance)
-      if (dist < -1800) {
-        blur = Math.min(10, (Math.abs(dist) - 1800) * 0.002);
-      } 
-      // Close up (passing through it)
-      else if (dist > -600) {
-        blur = Math.min(20, (600 + dist) * 0.03); // The closer we get to 0 (and past it), the blurrier
-      }
-      
-      item.el.style.filter = `blur(${blur}px)`;
-    });
 
     // Update HUD vertical progress bar
     const progressFill = document.getElementById('progress-fill');
@@ -312,7 +298,8 @@
         const blurPx = Math.round((1 - approachProgress) * 7);
         
         item.el.style.opacity = opacity.toFixed(2);
-        item.el.style.filter = blurPx > 1 ? `blur(${blurPx}px)` : 'none';
+        const isMobileDevice = window.innerWidth <= 860;
+        item.el.style.filter = (!isMobileDevice && blurPx > 1) ? `blur(${blurPx}px)` : 'none';
         item.el.style.visibility = 'visible';
         item.el.style.pointerEvents = 'none';
       } else {
@@ -523,21 +510,6 @@
 
         if (isVerticalScrollMode) {
           // Vertical swipe over cards -> drive page scroll
-          const maxScroll = document.body.scrollHeight - window.innerHeight;
-          const currentScroll = window.scrollY || window.pageYOffset;
-          const targetScroll = Math.max(0, Math.min(maxScroll, currentScroll + deltaY * 1.8));
-
-          if (lenisInstance && typeof lenisInstance.scrollTo === 'function') {
-            lenisInstance.scrollTo(targetScroll, { immediate: true });
-          } else {
-            window.scrollBy(0, deltaY * 1.8);
-          }
-          touchStartY = currentY;
-          touchStartX = currentX;
-        }
-      } else {
-        // Touching anywhere else on mobile content or background
-        if (Math.abs(deltaY) > 3) {
           const maxScroll = document.body.scrollHeight - window.innerHeight;
           const currentScroll = window.scrollY || window.pageYOffset;
           const targetScroll = Math.max(0, Math.min(maxScroll, currentScroll + deltaY * 1.8));
