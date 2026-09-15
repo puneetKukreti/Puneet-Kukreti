@@ -117,13 +117,9 @@
   let lastWindowWidth = window.innerWidth;
   
   function onWindowResize() {
-    const isMobile = window.innerWidth <= 860;
-    
-    // On mobile, ignore resize events if only the height changed (e.g., URL bar expanding/collapsing)
-    if (isMobile && window.innerWidth === lastWindowWidth) {
-      return;
-    }
-    lastWindowWidth = window.innerWidth;
+    // We removed the early return here because if the URL bar hides, the window height increases.
+    // If we don't resize the renderers, the bottom half of the screen will be clipped off!
+    // The debounce below is enough to prevent terrible glitching.
 
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
@@ -142,7 +138,7 @@
       if (currentProgress < 0.005) {
         camera.position.z = getOptimalHeroStartZ();
       }
-    }, 150);
+    }, 50);
   }
 
   function onMouseMove(e) {
