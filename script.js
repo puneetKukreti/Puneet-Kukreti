@@ -17,11 +17,22 @@
   let isMouseHovering = false;
   let hoverIdleTimer = null;
 
+  function getOptimalHeroStartZ() {
+    // Dynamic FOV distance based on THREE.PerspectiveCamera(45) and CSS3DRenderer:
+    // fovDist = (0.5 / tan(22.5 deg)) * innerHeight = 1.20710678 * innerHeight
+    const fovDist = (0.5 / Math.tan((45 * Math.PI) / 360)) * window.innerHeight;
+    // Target an authoritative, perfectly-framed scale of ~1.08 on desktop, and ~0.94 on mobile
+    const targetScale = window.innerWidth <= 860 ? 0.94 : 1.08;
+    const heroZ = 1000;
+    return heroZ + (fovDist / targetScale);
+  }
+
   function initThree() {
     scene = new THREE.Scene();
     
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 40000);
-    camera.position.set(0, 0, 1500);
+    const initialCamZ = getOptimalHeroStartZ();
+    camera.position.set(0, 0, initialCamZ);
 
     webglRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     webglRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -107,6 +118,9 @@
     camera.updateProjectionMatrix();
     webglRenderer.setSize(window.innerWidth, window.innerHeight);
     cssRenderer.setSize(window.innerWidth, window.innerHeight);
+    if (currentProgress < 0.005) {
+      camera.position.z = getOptimalHeroStartZ();
+    }
   }
 
   function onMouseMove(e) {
@@ -149,7 +163,7 @@
 
     checkMinigameTrigger();
 
-    const startZ = 2000;
+    const startZ = getOptimalHeroStartZ();
     const endZ = -24500;
 
     // Cinematic camera trajectory:
@@ -244,8 +258,10 @@
       // Distance from camera to object along Z (positive = object is in front of camera)
       const dist = camera.position.z - item.obj.position.z;
       
-      const nearCullDist = item.config.id === 'layer-cases' ? 100 : 160;
-      const exitFadeDist = item.config.id === 'layer-cases' ? 320 : 460;
+      const heroDistStart = Math.max(400, startZ - 1000);
+      const heroExitDist = Math.max(220, heroDistStart * 0.72);
+      const nearCullDist = item.config.id === 'layer-cases' ? 100 : (item.config.id === 'layer-hero' ? 80 : 160);
+      const exitFadeDist = item.config.id === 'layer-cases' ? 320 : (item.config.id === 'layer-hero' ? heroExitDist : 460);
 
       if (dist <= nearCullDist && item.config.id !== 'layer-contact') {
         // Safe near-plane culling: element is too close or behind camera -> strictly hidden

@@ -465,9 +465,9 @@ body {
 .hero-container {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: clamp(28px, 5vw, 70px);
+  gap: clamp(32px, 5vw, 75px);
   align-items: center;
-  width: min(980px, 85vw);
+  width: min(1180px, 88vw);
   margin: 0 auto;
 }
 
@@ -486,7 +486,7 @@ body {
 }
 
 .name-outline {
-  font-size: clamp(40px, 5.8vw, 84px);
+  font-size: clamp(42px, 6vw, 88px);
   font-weight: 900;
   letter-spacing: 0.05em;
   color: var(--ink);
@@ -494,7 +494,7 @@ body {
 }
 
 .name-solid {
-  font-size: clamp(40px, 5.8vw, 84px);
+  font-size: clamp(42px, 6vw, 88px);
   font-weight: 900;
   letter-spacing: 0.03em;
   color: var(--ink);
@@ -553,7 +553,7 @@ body {
 
 .portrait-container {
   position: relative;
-  width: clamp(130px, 12vw, 170px);
+  width: clamp(155px, 14vw, 195px);
   aspect-ratio: 0.82;
   display: flex;
   align-items: center;
