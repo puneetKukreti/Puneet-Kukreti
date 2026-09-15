@@ -113,14 +113,36 @@
     window.addEventListener('mousemove', onMouseMove);
   }
 
+  let resizeTimeout;
+  let lastWindowWidth = window.innerWidth;
+  
   function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    webglRenderer.setSize(window.innerWidth, window.innerHeight);
-    cssRenderer.setSize(window.innerWidth, window.innerHeight);
-    if (currentProgress < 0.005) {
-      camera.position.z = getOptimalHeroStartZ();
+    const isMobile = window.innerWidth <= 860;
+    
+    // On mobile, ignore resize events if only the height changed (e.g., URL bar expanding/collapsing)
+    if (isMobile && window.innerWidth === lastWindowWidth) {
+      return;
     }
+    lastWindowWidth = window.innerWidth;
+
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      webglRenderer.setSize(window.innerWidth, window.innerHeight);
+      cssRenderer.setSize(window.innerWidth, window.innerHeight);
+      
+      // Also resize comet canvas if it exists
+      const cometCanvas = document.getElementById('comet-canvas');
+      if (cometCanvas) {
+        cometCanvas.width = window.innerWidth;
+        cometCanvas.height = window.innerHeight;
+      }
+
+      if (currentProgress < 0.005) {
+        camera.position.z = getOptimalHeroStartZ();
+      }
+    }, 150);
   }
 
   function onMouseMove(e) {
@@ -643,17 +665,8 @@
     const canvas = document.getElementById('comet-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    window.addEventListener('resize', () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    });
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     const particles = [];
     let lastX = 0;
@@ -680,7 +693,7 @@
     });
 
     function renderComet() {
-      ctx.clearRect(0, 0, width, height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx;
